@@ -14,15 +14,15 @@ import ChatList from "./pages/ChatList";
 import CreateService from "./pages/CreateService";
 import MapPage from "./pages/MapPage";
 import ServiceDetails from "./pages/ServiceDetails";
-import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import Services from "./pages/admin/Services";
-import Bookings from "./pages/Admin/Bookings";
-import Analytics from "./pages/Admin/Analytics";
-import Users from "./pages/Admin/Users";
-import Reports from "./pages/Admin/Reports";
-import Complaints from "./pages/Admin/Complaints";
-import Settings from "./pages/Admin/Settings";
-import Providers from "./pages/Admin/Providers";
+import Bookings from "./pages/admin/Bookings";
+import Analytics from "./pages/admin/Analytics";
+import Users from "./pages/admin/Users";
+import Reports from "./pages/admin/Reports";
+import Complaints from "./pages/admin/Complaints";
+import Settings from "./pages/admin/Settings";
+import Providers from "./pages/admin/Providers";
 function AppContent() {
   const location = useLocation();
 
