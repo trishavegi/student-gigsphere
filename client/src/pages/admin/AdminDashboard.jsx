@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import AdminHeader from "../../components/AdminHeader";
 import api from "../../services/api";
-
+import { useNavigate } from "react-router-dom";
 function AdminDashboard() {
 
   const [stats, setStats] = useState({
@@ -12,6 +12,7 @@ function AdminDashboard() {
     reviews: 0,
   });
   const [bookings, setBookings] = useState([]);
+  const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
 
@@ -139,15 +140,7 @@ function AdminDashboard() {
 
         {/* CHARTS */}
 
-        <div className="bg-white rounded-xl shadow-sm p-6">
-
-          <h2 className="text-xl font-bold mb-6">
-            Platform Analytics
-          </h2>
-
-          
-
-        </div>
+        
 
 
         {/* RECENT DATA */}
@@ -165,9 +158,12 @@ function AdminDashboard() {
                 Recent Users
               </h2>
 
-              <span className="text-sm text-blue-600">
-                View All
-              </span>
+              <button
+  onClick={() => navigate("/admin/users")}
+  className="text-sm text-blue-600 hover:underline"
+>
+  View All
+</button>
 
             </div>
 
@@ -229,9 +225,12 @@ function AdminDashboard() {
                 Recent Bookings
               </h2>
 
-              <span className="text-sm text-blue-600">
-                View All
-              </span>
+              <button
+  onClick={() => navigate("/admin/bookings")}
+  className="text-sm text-blue-600 hover:underline"
+>
+  View All
+</button>
 
             </div>
 
