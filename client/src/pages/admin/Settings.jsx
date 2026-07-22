@@ -70,11 +70,16 @@ const updateAdminProfile = async () => {
     );
 
   } catch (error) {
-    alert(
-      error.response?.data?.message ||
-      "Unable to update profile"
-    );
-  }
+  console.log("PROFILE UPDATE ERROR:", error);
+  console.log("STATUS:", error.response?.status);
+  console.log("DATA:", error.response?.data);
+
+  alert(
+    error.response?.data?.message ||
+    error.message ||
+    "Unable to update profile"
+  );
+}
 };
   return (
     <div className="flex bg-gray-100 min-h-screen">
