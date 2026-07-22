@@ -3,237 +3,323 @@ import Sidebar from "../../components/Sidebar";
 import AdminCharts from "../../components/AdminCharts";
 import AdminHeader from "../../components/AdminHeader";
 import api from "../../services/api";
+
 function AdminDashboard() {
-    const [stats, setStats] = useState({
-  users: 0,
-  services: 0,
-  bookings: 0,
-  reviews: 0,
-});
 
-const [users, setUsers] = useState([]);
-const [search, setSearch] = useState("");
-useEffect(() => {
-  fetchDashboard();
-  fetchUsers();
-}, []);
+  const [stats, setStats] = useState({
+    users: 0,
+    services: 0,
+    bookings: 0,
+    reviews: 0,
+  });
+  const [bookings, setBookings] = useState([]);
 
-const fetchDashboard = async () => {
-  try {
-    console.log("Calling dashboard API...");
+  const [users, setUsers] = useState([]);
 
-    const response = await api.get("/admin/dashboard");
-
-    console.log("Dashboard Response:", response.data);
-
-    setStats(response.data);
-
-  } catch (error) {
-
-    console.log("Dashboard Error:", error);
-
-  }
-};
-
-const fetchUsers = async () => {
-  try {
-    const response = await api.get("/admin/users");
-
-    console.log("Users Data:", response.data);
-
-    setUsers(response.data);
-
-  } catch (error) {
-    console.log(error);
-  }
-};
-const deleteUser = async (id) => {
-  try {
-
-    await api.delete(`/admin/users/${id}`);
-
-    alert("User Deleted Successfully");
-
+  useEffect(() => {
+    fetchDashboard();
     fetchUsers();
+    fetchBookings();
+  }, []);
+
+  const fetchDashboard = async () => {
+    try {
+
+      const response = await api.get("/admin/dashboard");
+
+      setStats(response.data);
+
+    } catch (error) {
+
+      console.log("Dashboard Error:", error);
+
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+
+      const response = await api.get("/admin/users");
+
+      setUsers(response.data);
+
+    } catch (error) {
+
+      console.log("Users Error:", error);
+
+    }
+  };
+  const fetchBookings = async () => {
+  try {
+
+    const response = await api.get("/admin/bookings");
+
+    setBookings(response.data);
 
   } catch (error) {
 
-    console.log(error);
-
-    alert("Unable to delete user");
+    console.log("Bookings Error:", error);
 
   }
 };
+
   return (
+
     <div className="flex bg-gray-100 min-h-screen">
 
       <Sidebar />
 
       <div className="ml-64 flex-1 p-8 space-y-8">
-<AdminHeader />
 
-        
-        {/* Cards */}
+        <AdminHeader />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+        {/* SUMMARY CARDS */}
 
-  <div className="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-2xl shadow-lg p-6 hover:scale-105 duration-300">
-    <div className="text-4xl">👥</div>
-    <h2 className="text-lg mt-3">Total Users</h2>
-    <p className="text-4xl font-bold mt-2">{stats.users}</p>
-  </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-  <div className="bg-gradient-to-r from-green-500 to-green-700 text-white rounded-2xl shadow-lg p-6 hover:scale-105 duration-300">
-    <div className="text-4xl">🛠</div>
-    <h2 className="text-lg mt-3">Services</h2>
-    <p className="text-4xl font-bold mt-2">{stats.services}</p>
-  </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+    <p className="text-sm text-gray-500">
+      Total Users
+    </p>
 
-  <div className="bg-gradient-to-r from-orange-500 to-orange-700 text-white rounded-2xl shadow-lg p-6 hover:scale-105 duration-300">
-    <div className="text-4xl">📅</div>
-    <h2 className="text-lg mt-3">Bookings</h2>
-    <p className="text-4xl font-bold mt-2">{stats.bookings}</p>
-  </div>
-
-  <div className="bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded-2xl shadow-lg p-6 hover:scale-105 duration-300">
-    <div className="text-4xl">💰</div>
-    <h2 className="text-lg mt-3">Revenue</h2>
-    <p className="text-4xl font-bold mt-2">₹0</p>
-  </div>
-
-</div>
-        <AdminCharts
-  analytics={{
-    users: stats.users,
-    services: stats.services,
-    bookings: stats.bookings,
-    accepted: 0,
-    pending: 0,
-    rejected: 0,
-    cancelled: 0,
-  }}
-  monthlyData={[]}
-/>
-
-<div className="grid grid-cols-2 gap-6 mt-10"></div>
-        <div className="grid grid-cols-2 gap-6 mt-10">
-
-  {/* Recent Users */}
-
-  <div className="bg-white rounded-xl shadow-lg p-6">
-
-    <h2 className="text-2xl font-semibold mb-4">
-      Recent Users
-    </h2>
-    <input
-  type="text"
-  placeholder="Search user by name..."
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-  className="w-full border p-3 rounded-lg mb-4"
-/>
-
-    <table className="w-full">
-
-      <thead>
-
-        <tr className="border-b">
-
-          <th className="text-left py-2">Name</th>
-
-          <th className="text-left py-2">Role</th>
-<th className="text-left py-2">Action</th>
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-       {users
-  .filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase())
-  )
-  .map((user) => (
-  <tr key={user._id} className="border-b">
-
-    <td className="py-3">
-      {user.name}
-    </td>
-
-    <td className="py-3">
-      {user.role}
-    </td>
-    <td className="py-3">
-
-  <button
-    onClick={() => deleteUser(user._id)}
-    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-  >
-    Delete
-  </button>
-
-</td>
-
-  </tr>
-))}
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-  {/* Recent Bookings */}
-
-  <div className="bg-white rounded-xl shadow-lg p-6">
-
-    <h2 className="text-2xl font-semibold mb-4">
-      Recent Bookings
+    <h2 className="text-3xl font-bold text-gray-900 mt-3">
+      {stats.users}
     </h2>
 
-    <table className="w-full">
-
-      <thead>
-
-        <tr className="border-b">
-
-          <th className="text-left py-2">Service</th>
-
-          <th className="text-left py-2">Status</th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-        <tr className="border-b">
-          <td className="py-3">Web Design</td>
-          <td className="text-green-600">Completed</td>
-        </tr>
-
-        <tr className="border-b">
-          <td className="py-3">Java Project</td>
-          <td className="text-yellow-600">Pending</td>
-        </tr>
-
-        <tr>
-          <td className="py-3">Logo Design</td>
-          <td className="text-blue-600">Accepted</td>
-        </tr>
-
-      </tbody>
-
-    </table>
-
+    <p className="text-sm text-green-600 mt-2">
+      Registered users
+    </p>
   </div>
 
-</div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+    <p className="text-sm text-gray-500">
+      Total Services
+    </p>
+
+    <h2 className="text-3xl font-bold text-gray-900 mt-3">
+      {stats.services}
+    </h2>
+
+    <p className="text-sm text-blue-600 mt-2">
+      Services listed
+    </p>
+  </div>
+
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+    <p className="text-sm text-gray-500">
+      Total Bookings
+    </p>
+
+    <h2 className="text-3xl font-bold text-gray-900 mt-3">
+      {stats.bookings}
+    </h2>
+
+    <p className="text-sm text-orange-600 mt-2">
+      Platform bookings
+    </p>
+  </div>
+
+
+           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+    <p className="text-sm text-gray-500">
+      Total Revenue
+    </p>
+
+    <h2 className="text-3xl font-bold text-gray-900 mt-3">
+      ₹{stats.revenue || 0}
+    </h2>
+
+    <p className="text-sm text-purple-600 mt-2">
+      From completed bookings
+    </p>
+  </div>
+        </div>
+
+
+        {/* CHARTS */}
+
+        <div className="bg-white rounded-xl shadow-sm p-6">
+
+          <h2 className="text-xl font-bold mb-6">
+            Platform Analytics
+          </h2>
+
+          <AdminCharts
+            analytics={{
+              users: stats.users,
+              services: stats.services,
+              bookings: stats.bookings,
+              accepted: 0,
+              pending: 0,
+              rejected: 0,
+              cancelled: 0,
+            }}
+            monthlyData={[]}
+          />
+
+        </div>
+
+
+        {/* RECENT DATA */}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+
+          {/* RECENT USERS */}
+
+          <div className="bg-white rounded-xl shadow-sm p-6">
+
+            <div className="flex justify-between items-center mb-5">
+
+              <h2 className="text-xl font-bold">
+                Recent Users
+              </h2>
+
+              <span className="text-sm text-blue-600">
+                View All
+              </span>
+
+            </div>
+
+
+            <table className="w-full">
+
+              <thead>
+
+                <tr className="border-b text-gray-500">
+
+                  <th className="text-left py-3">
+                    Name
+                  </th>
+
+                  <th className="text-left py-3">
+                    Role
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                {users.slice(0, 5).map((user) => (
+
+                  <tr
+                    key={user._id}
+                    className="border-b last:border-none"
+                  >
+
+                    <td className="py-4 font-medium">
+                      {user.name}
+                    </td>
+
+                    <td className="py-4 capitalize text-gray-500">
+                      {user.role}
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+
+          {/* RECENT BOOKINGS */}
+
+          <div className="bg-white rounded-xl shadow-sm p-6">
+
+            <div className="flex justify-between items-center mb-5">
+
+              <h2 className="text-xl font-bold">
+                Recent Bookings
+              </h2>
+
+              <span className="text-sm text-blue-600">
+                View All
+              </span>
+
+            </div>
+
+
+            <table className="w-full">
+
+              <thead>
+
+                <tr className="border-b text-gray-500">
+
+                  <th className="text-left py-3">
+                    Service
+                  </th>
+
+                  <th className="text-left py-3">
+                    Status
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+  {bookings.slice(0, 5).map((booking) => (
+
+    <tr
+      key={booking._id}
+      className="border-b last:border-none"
+    >
+
+      <td className="py-4">
+
+        {booking.service?.title || "Unknown Service"}
+
+      </td>
+
+      <td className="py-4 capitalize">
+
+        <span
+          className={
+            booking.status === "completed"
+              ? "text-green-600"
+              : booking.status === "pending"
+              ? "text-yellow-600"
+              : booking.status === "accepted"
+              ? "text-blue-600"
+              : "text-red-600"
+          }
+        >
+
+          {booking.status}
+
+        </span>
+
+      </td>
+
+    </tr>
+
+  ))}
+
+</tbody>
+
+            </table>
+
+          </div>
+
+        </div>
 
       </div>
 
     </div>
+
   );
+
 }
 
 export default AdminDashboard;
