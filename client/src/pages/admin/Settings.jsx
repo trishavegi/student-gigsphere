@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import AdminHeader from "../../components/AdminHeader";
 import api from "../../services/api";
@@ -6,6 +6,10 @@ import { useNavigate } from "react-router-dom";
 
 function Settings() {
   const navigate = useNavigate();
+  const [admin, setAdmin] = useState({
+  name: "",
+  email: "",
+});
   const [currentPassword, setCurrentPassword] = useState("");
 const [newPassword, setNewPassword] = useState("");
 const [confirmPassword, setConfirmPassword] = useState("");
@@ -38,6 +42,40 @@ const changePassword = async () => {
   }
 
 };
+const fetchAdminProfile = async () => {
+  try {
+    const response = await api.get("/auth/profile");
+
+    setAdmin({
+      name: response.data.name,
+      email: response.data.email,
+    });
+
+  } catch (error) {
+    console.log("Profile Error:", error);
+  }
+};
+const updateAdminProfile = async () => {
+  try {
+    const response = await api.put("/auth/profile", {
+      name: admin.name,
+      email: admin.email,
+    });
+
+    alert(response.data.message);
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify(response.data.user)
+    );
+
+  } catch (error) {
+    alert(
+      error.response?.data?.message ||
+      "Unable to update profile"
+    );
+  }
+};
   return (
     <div className="flex bg-gray-100 min-h-screen">
 
@@ -68,12 +106,17 @@ const changePassword = async () => {
                 Admin Name
               </label>
 
-              <input
-                type="text"
-                defaultValue="Admin"
-                className="w-full border p-3 rounded mt-2"
-              />
-
+             <input
+  type="text"
+  value={admin.name}
+  onChange={(e) =>
+    setAdmin({
+      ...admin,
+      name: e.target.value,
+    })
+  }
+  className="w-full border p-3 rounded mt-2"
+/>
             </div>
 
             <div>
@@ -82,11 +125,23 @@ const changePassword = async () => {
                 Email
               </label>
 
-              <input
-                type="email"
-                defaultValue="admin@gmail.com"
-                className="w-full border p-3 rounded mt-2"
-              />
+             <input
+  type="email"
+  value={admin.email}
+  onChange={(e) =>
+    setAdmin({
+      ...admin,
+      email: e.target.value,
+    })
+  }
+  className="w-full border p-3 rounded mt-2"
+/>
+<button
+  onClick={updateAdminProfile}
+  className="mt-5 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700"
+>
+  Save Profile
+</button>
 
             </div>
 
