@@ -192,7 +192,7 @@ const downloadBookingsPDF = () => {
 
       <Sidebar />
 
-      <div className="ml-64 flex-1 p-8">
+      <div className="ml-0 md:ml-64 flex-1 p-4 sm:p-6 lg:p-8">
 
         <h1 className="text-3xl font-bold">
           Reports
@@ -202,7 +202,7 @@ const downloadBookingsPDF = () => {
           Download Platform Reports
         </p>
 
-        <div className="grid grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
 
           <div className="bg-white rounded-xl shadow-lg p-6">
 
@@ -215,13 +215,13 @@ const downloadBookingsPDF = () => {
             </p>
 
             <button
-  onClick={downloadServicesPDF}
-  className="mt-5 bg-green-600 text-white px-5 py-2 rounded-lg"
+onClick={downloadUsersPDF}
+className="mt-5 bg-green-600 text-white px-5 py-2 rounded-lg"
 >
   Download PDF
 </button>
 <button
-  onClick={downloadServicesExcel}
+  onClick={downloadServicesPDF}
   className="mt-3 bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700"
 >
   Download Excel
