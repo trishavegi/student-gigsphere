@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
-import AdminCharts from "../../components/AdminCharts";
 import AdminHeader from "../../components/AdminHeader";
 import api from "../../services/api";
 
@@ -146,18 +145,7 @@ function AdminDashboard() {
             Platform Analytics
           </h2>
 
-          <AdminCharts
-            analytics={{
-              users: stats.users,
-              services: stats.services,
-              bookings: stats.bookings,
-              accepted: 0,
-              pending: 0,
-              rejected: 0,
-              cancelled: 0,
-            }}
-            monthlyData={[]}
-          />
+          
 
         </div>
 
