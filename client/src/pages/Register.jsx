@@ -71,7 +71,7 @@ function Register() {
             Select Role
           </h3>
 
-          <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="grid grid-cols-2 gap-3 mb-6">
 
             <button
               type="button"
@@ -101,19 +101,7 @@ function Register() {
               Provider
             </button>
 
-            <button
-              type="button"
-              onClick={()=>setRole("admin")}
-              className={`p-4 rounded-xl border ${
-                role==="admin"
-                  ? "bg-purple-600 text-white"
-                  : "bg-white"
-              }`}
-            >
-              👑
-              <br />
-              Admin
-            </button>
+            
 
           </div>
 
