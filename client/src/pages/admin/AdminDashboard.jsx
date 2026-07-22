@@ -15,6 +15,7 @@ function AdminDashboard() {
   const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchDashboard();
@@ -157,6 +158,13 @@ function AdminDashboard() {
               <h2 className="text-xl font-bold">
                 Recent Users
               </h2>
+              <input
+  type="text"
+  placeholder="Search users..."
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  className="w-full border border-gray-200 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
 
               <button
   onClick={() => navigate("/admin/users")}
@@ -189,7 +197,20 @@ function AdminDashboard() {
 
               <tbody>
 
-                {users.slice(0, 5).map((user) => (
+                {users
+  .filter((user) => {
+    const searchText = search.toLowerCase();
+
+    return (
+      user.name?.toLowerCase().includes(searchText) ||
+      user.email?.toLowerCase().includes(searchText) ||
+      user.role?.toLowerCase().includes(searchText) ||
+      user.college?.toLowerCase().includes(searchText) ||
+      user.department?.toLowerCase().includes(searchText)
+    );
+  })
+  .slice(0, 5)
+  .map((user) => (
 
                   <tr
                     key={user._id}
