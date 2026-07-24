@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import api from "../services/api";
 
-const socket = io("http://localhost:5000");
-
+const socket = io("https://student-gigsphere.onrender.com");
 function Chat() {
 
 const { id: receiverId } = useParams();
