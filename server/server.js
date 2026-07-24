@@ -16,6 +16,7 @@ const favoriteRoutes = require("./routes/favoriteRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const complaintRoutes = require("./routes/complaintRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 connectDB();
 
@@ -36,6 +37,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/favorites", favoriteRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/complaints", complaintRoutes);
+app.use("/api/auth", authRoutes);
 
 const server = http.createServer(app);
 
