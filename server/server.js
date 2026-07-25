@@ -44,11 +44,13 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
+      "https://student-gigsphere-frontend.onrender.com",
       "http://localhost:5173",
       "http://localhost:5177",
       "http://localhost:5180"
     ],
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
