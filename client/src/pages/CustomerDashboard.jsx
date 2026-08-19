@@ -168,16 +168,16 @@ booking.status === "cancelled"
 }`}    >
 
       <h3 className="text-xl font-bold">
-        {booking.service.title}
-      </h3>
+  {booking.service?.title || "Service unavailable"}
+</h3>
 
       <p>
-        Provider : {booking.provider.name}
-      </p>
+  Provider : {booking.provider?.name || "Provider unavailable"}
+</p>
 
       <p>
-        Price : ₹{booking.service.price}
-      </p>
+  Price : ₹{booking.service?.price ?? "N/A"}
+</p>
 
       <p>
 Status : {booking.status}
@@ -227,19 +227,20 @@ Booking Cancelled
       >
 
         <h3 className="text-xl font-bold">
-          {fav.service.title}
-        </h3>
+  {fav.service?.title || "Service unavailable"}
+</h3>
 
-        <p>
-          📍 {fav.service.location}
-        </p>
+<p>
+  📍 {fav.service?.location || "Location unavailable"}
+</p>
 
-        <p>
-          ₹ {fav.service.price}
-        </p>
+<p>
+  ₹ {fav.service?.price ?? "N/A"}
+</p>
 
         <button
           onClick={() => removeFavorite(fav.service._id)}
+          disabled={!fav.service}
           className="absolute top-4 right-4 text-red-500 text-2xl"
         >
           ❤️
