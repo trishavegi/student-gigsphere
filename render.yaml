@@ -5,6 +5,7 @@ services:
     rootDir: client
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
+
     routes:
       - type: rewrite
         source: /*
