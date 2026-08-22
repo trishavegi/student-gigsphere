@@ -80,6 +80,7 @@ const sendMessage = async (req, res) => {
 const getMessages = async (req, res) => {
 try {
 const currentUser = req.user._id;
+const currentUserId = currentUser.toString();
 const otherUser = req.params.id;
 
 ```
@@ -135,21 +136,30 @@ const chats = await Chat.find({
 // Keep only the latest message for each person
 const uniqueChats = [];
 const seenUsers = new Set();
-
 for (const chat of chats) {
 
+  // Skip broken chat records
+  if (!chat.sender || !chat.receiver) {
+    console.log("Skipping invalid chat:", chat._id);
+    continue;
+  }
+
+  const senderId = chat.sender._id.toString();
+  const currentUserId = currentUser.toString();
+
   const otherUser =
-    chat.sender._id.toString() === currentUser.toString()
+    senderId === currentUserId
       ? chat.receiver
       : chat.sender;
 
-  if (!otherUser) {
+  if (!otherUser || !otherUser._id) {
     continue;
   }
 
   const otherUserId = otherUser._id.toString();
 
   if (!seenUsers.has(otherUserId)) {
+
 
     seenUsers.add(otherUserId);
 
