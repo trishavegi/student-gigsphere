@@ -6,6 +6,11 @@ const Notification = require("../models/Notification");
 // ===============================
 const sendMessage = async (req, res) => {
   try {
+    console.log("========== SEND MESSAGE ==========");
+
+    console.log("USER:", req.user);
+    console.log("BODY:", req.body);
+
     const { receiver, message } = req.body;
 
     if (!receiver || !message || !message.trim()) {
@@ -14,26 +19,34 @@ const sendMessage = async (req, res) => {
       });
     }
 
-    // 1. Save chat message
+    console.log("SENDER ID:", req.user._id);
+    console.log("RECEIVER ID:", receiver);
+    console.log("MESSAGE:", message);
+
+    // Create chat
     const chat = await Chat.create({
       sender: req.user._id,
       receiver: receiver,
       message: message.trim()
     });
 
-    // 2. Get sender and receiver details
+    console.log("CHAT CREATED:", chat._id);
+
+    // Populate chat
     const populatedChat = await Chat.findById(chat._id)
       .populate("sender", "name email")
       .populate("receiver", "name email");
 
-    // 3. Create notification
+    console.log("POPULATED CHAT:", populatedChat);
+
+    // Create notification
     try {
       await Notification.create({
         user: receiver,
         message: `${populatedChat.sender.name} sent you a new message`
       });
 
-      console.log("Notification created successfully");
+      console.log("NOTIFICATION CREATED");
 
     } catch (notificationError) {
 
@@ -42,27 +55,24 @@ const sendMessage = async (req, res) => {
         notificationError
       );
 
-      // IMPORTANT:
-      // Do not fail the chat message
-      // just because notification failed.
     }
 
-    // 4. Return message
+    console.log("MESSAGE SUCCESS");
+
     res.status(201).json(populatedChat);
 
   } catch (error) {
 
-    console.error(
-      "SEND MESSAGE ERROR:",
-      error
-    );
+    console.error("========== SEND MESSAGE ERROR ==========");
+    console.error(error);
+    console.error(error.message);
+    console.error(error.stack);
 
     res.status(500).json({
       message: error.message
     });
   }
 };
-
 
 // ===============================
 // GET MESSAGES BETWEEN TWO USERS
