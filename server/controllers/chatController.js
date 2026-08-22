@@ -1,44 +1,68 @@
 const Chat = require("../models/Chat");
+const Notification = require("../models/Notification");
 
 // ===============================
 // SEND MESSAGE
 // ===============================
 const sendMessage = async (req, res) => {
-try {
-const { receiver, message } = req.body;
+  try {
+    const { receiver, message } = req.body;
 
-```
-if (!receiver || !message || !message.trim()) {
-  return res.status(400).json({
-    message: "Receiver and message are required"
-  });
-}
+    if (!receiver || !message || !message.trim()) {
+      return res.status(400).json({
+        message: "Receiver and message are required"
+      });
+    }
 
-const chat = await Chat.create({
-  sender: req.user._id,
-  receiver: receiver,
-  message: message.trim()
-});
+    // 1. Save chat message
+    const chat = await Chat.create({
+      sender: req.user._id,
+      receiver: receiver,
+      message: message.trim()
+    });
 
-// Return sender and receiver details
-const populatedChat = await Chat.findById(chat._id)
-  .populate("sender", "name email")
-  .populate("receiver", "name email");
+    // 2. Get sender and receiver details
+    const populatedChat = await Chat.findById(chat._id)
+      .populate("sender", "name email")
+      .populate("receiver", "name email");
 
-res.status(201).json(populatedChat);
-```
+    // 3. Create notification
+    try {
+      await Notification.create({
+        user: receiver,
+        message: `${populatedChat.sender.name} sent you a new message`
+      });
 
-} catch (error) {
-console.error("SEND MESSAGE ERROR:", error);
+      console.log("Notification created successfully");
 
-```
-res.status(500).json({
-  message: error.message
-});
-```
+    } catch (notificationError) {
 
-}
+      console.error(
+        "NOTIFICATION ERROR:",
+        notificationError
+      );
+
+      // IMPORTANT:
+      // Do not fail the chat message
+      // just because notification failed.
+    }
+
+    // 4. Return message
+    res.status(201).json(populatedChat);
+
+  } catch (error) {
+
+    console.error(
+      "SEND MESSAGE ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      message: error.message
+    });
+  }
 };
+
 
 // ===============================
 // GET MESSAGES BETWEEN TWO USERS
@@ -88,7 +112,6 @@ const getRecentChats = async (req, res) => {
 try {
 const currentUser = req.user._id;
 
-```
 const chats = await Chat.find({
   $or: [
     { sender: currentUser },
@@ -131,16 +154,15 @@ for (const chat of chats) {
 }
 
 res.status(200).json(uniqueChats);
-```
+
 
 } catch (error) {
 console.error("GET RECENT CHATS ERROR:", error);
 
-```
 res.status(500).json({
   message: error.message
 });
-```
+
 
 }
 };
@@ -151,7 +173,7 @@ res.status(500).json({
 const getUnreadCount = async (req, res) => {
 try {
 
-```
+
 const count = await Chat.countDocuments({
   receiver: req.user._id,
   isRead: false
@@ -160,17 +182,16 @@ const count = await Chat.countDocuments({
 res.status(200).json({
   count
 });
-```
+
 
 } catch (error) {
 
-```
 console.error("GET UNREAD COUNT ERROR:", error);
 
 res.status(500).json({
   message: error.message
 });
-```
+
 
 }
 };
@@ -181,7 +202,7 @@ res.status(500).json({
 const markMessagesRead = async (req, res) => {
 try {
 
-```
+
 await Chat.updateMany(
   {
     sender: req.params.id,
@@ -198,17 +219,17 @@ await Chat.updateMany(
 res.status(200).json({
   message: "Messages marked as read"
 });
-```
+
 
 } catch (error) {
 
-```
+
 console.error("MARK READ ERROR:", error);
 
 res.status(500).json({
   message: error.message
 });
-```
+
 
 }
 };
