@@ -1,6 +1,10 @@
 const Chat = require("../models/Chat");
 const Notification = require("../models/Notification");
+const User = require("../models/User");
 
+// ===============================
+// SEND MESSAGE
+// ===============================
 // ===============================
 // SEND MESSAGE
 // ===============================
@@ -8,7 +12,7 @@ const sendMessage = async (req, res) => {
   try {
     console.log("========== SEND MESSAGE ==========");
 
-    console.log("USER:", req.user);
+    console.log("REQ.USER:", req.user);
     console.log("BODY:", req.body);
 
     const { receiver, message } = req.body;
@@ -19,31 +23,61 @@ const sendMessage = async (req, res) => {
       });
     }
 
-    console.log("SENDER ID:", req.user._id);
-    console.log("RECEIVER ID:", receiver);
-    console.log("MESSAGE:", message);
+    // Get sender from database
+    const senderUser = await User.findById(req.user._id);
+
+    if (!senderUser) {
+      console.log("SENDER USER NOT FOUND:", req.user._id);
+
+      return res.status(401).json({
+        message: "Your user account was not found. Please login again."
+      });
+    }
+
+    // Get receiver from database
+    const receiverUser = await User.findById(receiver);
+
+    if (!receiverUser) {
+      console.log("RECEIVER USER NOT FOUND:", receiver);
+
+      return res.status(404).json({
+        message: "Receiver user not found."
+      });
+    }
+
+    console.log("SENDER:", senderUser.name, senderUser._id);
+    console.log("RECEIVER:", receiverUser.name, receiverUser._id);
 
     // Create chat
     const chat = await Chat.create({
-      sender: req.user._id,
-      receiver: receiver,
+      sender: senderUser._id,
+      receiver: receiverUser._id,
       message: message.trim()
     });
 
     console.log("CHAT CREATED:", chat._id);
 
-    // Populate chat
+    // Populate sender and receiver
     const populatedChat = await Chat.findById(chat._id)
       .populate("sender", "name email")
       .populate("receiver", "name email");
 
     console.log("POPULATED CHAT:", populatedChat);
 
+    // Make sure population worked
+    if (!populatedChat.sender || !populatedChat.receiver) {
+      console.error("SENDER OR RECEIVER POPULATION FAILED");
+
+      return res.status(500).json({
+        message: "Unable to load sender or receiver information."
+      });
+    }
+
     // Create notification
     try {
       await Notification.create({
-        user: receiver,
-        message: `${populatedChat.sender.name} sent you a new message`
+        user: receiverUser._id,
+        message: `${senderUser.name} sent you a new message`
       });
 
       console.log("NOTIFICATION CREATED");
@@ -55,6 +89,7 @@ const sendMessage = async (req, res) => {
         notificationError
       );
 
+      // Notification failure should NOT break chat
     }
 
     console.log("MESSAGE SUCCESS");
@@ -63,7 +98,10 @@ const sendMessage = async (req, res) => {
 
   } catch (error) {
 
-    console.error("========== SEND MESSAGE ERROR ==========");
+    console.error(
+      "========== SEND MESSAGE ERROR =========="
+    );
+
     console.error(error);
     console.error(error.message);
     console.error(error.stack);
