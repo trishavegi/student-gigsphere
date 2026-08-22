@@ -7,9 +7,12 @@ function ServiceDetails() {
 
   const { id } = useParams();
   const navigate = useNavigate();
-
+  
   const [service, setService] = useState(null);
   const [reason, setReason] = useState("");
+  const providerId =
+  service?.user?._id || service?.user;
+
 
   useEffect(() => {
     fetchService();
@@ -20,8 +23,11 @@ function ServiceDetails() {
     try {
 
       const response = await api.get(`/services/${id}`);
+      console.log("SERVICE DATA:", response.data);
+console.log("PROVIDER DATA:", response.data.user);
 
       setService(response.data);
+      
 
     } catch (error) {
 
@@ -132,9 +138,9 @@ const submitComplaint = async () => {
         <p>
           <b>Provider :</b> {service.user?.name}
         </p>
-        {service.user?._id && (
+       {providerId && (
   <button
-    onClick={() => navigate(`/chat/${service.user._id}`)}
+    onClick={() => navigate(`/chat/${providerId}`)}
     className="mt-4 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
   >
     💬 Chat with Provider
