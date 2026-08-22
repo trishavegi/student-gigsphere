@@ -1,151 +1,222 @@
 const Chat = require("../models/Chat");
 
-const sendMessage = async (req,res)=>{
+// ===============================
+// SEND MESSAGE
+// ===============================
+const sendMessage = async (req, res) => {
+try {
+const { receiver, message } = req.body;
 
-try{
-
-  const chat = await Chat.create({
-
-    sender:req.user,
-
-    receiver:req.body.receiver,
-
-    message:req.body.message
-
+```
+if (!receiver || !message || !message.trim()) {
+  return res.status(400).json({
+    message: "Receiver and message are required"
   });
-
-  res.status(201).json(chat);
-
-}
-catch(error){
-
-  res.status(500).json({
-    message:error.message
-  });
-
 }
 
+const chat = await Chat.create({
+  sender: req.user._id,
+  receiver: receiver,
+  message: message.trim()
+});
+
+// Return sender and receiver details
+const populatedChat = await Chat.findById(chat._id)
+  .populate("sender", "name email")
+  .populate("receiver", "name email");
+
+res.status(201).json(populatedChat);
+```
+
+} catch (error) {
+console.error("SEND MESSAGE ERROR:", error);
+
+```
+res.status(500).json({
+  message: error.message
+});
+```
+
+}
 };
 
-const getMessages = async (req,res)=>{
+// ===============================
+// GET MESSAGES BETWEEN TWO USERS
+// ===============================
+const getMessages = async (req, res) => {
+try {
+const currentUser = req.user._id;
+const otherUser = req.params.id;
 
-try{
+```
+const chats = await Chat.find({
+  $or: [
+    {
+      sender: currentUser,
+      receiver: otherUser
+    },
+    {
+      sender: otherUser,
+      receiver: currentUser
+    }
+  ]
+})
+  .populate("sender", "name email")
+  .populate("receiver", "name email")
+  .sort({ createdAt: 1 });
 
-  const chats = await Chat.find({
+res.status(200).json(chats);
+```
 
-    $or:[
-      {
-        sender:req.user,
-        receiver:req.params.id
-      },
-      {
-        sender:req.params.id,
-        receiver:req.user
-      }
-    ]
+} catch (error) {
+console.error("GET MESSAGES ERROR:", error);
 
-  });
-
-  res.status(200).json(chats);
+```
+res.status(500).json({
+  message: error.message
+});
+```
 
 }
-catch(error){
-
-  res.status(500).json({
-    message:error.message
-  });
-
-}
-
 };
+
+// ===============================
+// GET RECENT CHATS
+// ONE CHAT PER PERSON
+// ===============================
 const getRecentChats = async (req, res) => {
+try {
+const currentUser = req.user._id;
 
-  try {
+```
+const chats = await Chat.find({
+  $or: [
+    { sender: currentUser },
+    { receiver: currentUser }
+  ]
+})
+  .populate("sender", "name email")
+  .populate("receiver", "name email")
+  .sort({ createdAt: -1 });
 
-    const chats = await Chat.find({
-      $or: [
-        { sender: req.user },
-        { receiver: req.user }
-      ]
-    })
-    .populate("sender", "name")
-    .populate("receiver", "name")
-    .sort({ createdAt: -1 });
+// Keep only the latest message for each person
+const uniqueChats = [];
+const seenUsers = new Set();
 
-    res.status(200).json(chats);
+for (const chat of chats) {
 
-  } catch (error) {
+  const otherUser =
+    chat.sender._id.toString() === currentUser.toString()
+      ? chat.receiver
+      : chat.sender;
 
-    res.status(500).json({
-      message: error.message
-    });
-
+  if (!otherUser) {
+    continue;
   }
 
-};
-const getUnreadCount = async (req,res)=>{
+  const otherUserId = otherUser._id.toString();
 
-try{
+  if (!seenUsers.has(otherUserId)) {
 
-  const count = await Chat.countDocuments({
+    seenUsers.add(otherUserId);
 
-    receiver:req.user,
-
-    isRead:false
-
-  });
-
-  res.status(200).json({
-    count
-  });
-
-}
-catch(error){
-
-  res.status(500).json({
-    message:error.message
-  });
-
+    uniqueChats.push({
+      _id: chat._id,
+      message: chat.message,
+      createdAt: chat.createdAt,
+      isRead: chat.isRead,
+      user: otherUser
+    });
+  }
 }
 
+res.status(200).json(uniqueChats);
+```
+
+} catch (error) {
+console.error("GET RECENT CHATS ERROR:", error);
+
+```
+res.status(500).json({
+  message: error.message
+});
+```
+
+}
 };
-const markMessagesRead = async(req,res)=>{
 
-try{
+// ===============================
+// GET UNREAD COUNT
+// ===============================
+const getUnreadCount = async (req, res) => {
+try {
 
+```
+const count = await Chat.countDocuments({
+  receiver: req.user._id,
+  isRead: false
+});
+
+res.status(200).json({
+  count
+});
+```
+
+} catch (error) {
+
+```
+console.error("GET UNREAD COUNT ERROR:", error);
+
+res.status(500).json({
+  message: error.message
+});
+```
+
+}
+};
+
+// ===============================
+// MARK MESSAGES AS READ
+// ===============================
+const markMessagesRead = async (req, res) => {
+try {
+
+```
 await Chat.updateMany(
-
-{
-sender:req.params.id,
-receiver:req.user,
-isRead:false
-},
-
-{
-isRead:true
-}
-
+  {
+    sender: req.params.id,
+    receiver: req.user._id,
+    isRead: false
+  },
+  {
+    $set: {
+      isRead: true
+    }
+  }
 );
 
 res.status(200).json({
-message:"Messages marked read"
+  message: "Messages marked as read"
 });
+```
 
-}
-catch(error){
+} catch (error) {
+
+```
+console.error("MARK READ ERROR:", error);
 
 res.status(500).json({
-message:error.message
+  message: error.message
 });
+```
 
 }
-
 };
 
-module.exports={
-  sendMessage,
-  getMessages,
-   getRecentChats,
-   getUnreadCount,
+module.exports = {
+sendMessage,
+getMessages,
+getRecentChats,
+getUnreadCount,
 markMessagesRead
 };

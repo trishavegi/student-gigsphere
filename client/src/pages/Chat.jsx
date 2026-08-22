@@ -1,276 +1,421 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import api from "../services/api";
 
 const socket = io("https://student-gigsphere.onrender.com");
+
 function Chat() {
 
 const { id: receiverId } = useParams();
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [typing, setTyping] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState([]);
 
-  const bottomRef = useRef(null);
+const [message, setMessage] = useState("");
+const [messages, setMessages] = useState([]);
+const [typing, setTyping] = useState(false);
+const [onlineUsers, setOnlineUsers] = useState([]);
 
-  // Load old messages
-  useEffect(() => {
-    fetchMessages();
-  }, []);
+const bottomRef = useRef(null);
 
-  const fetchMessages = async () => {
+const currentUserId = localStorage.getItem("userId");
 
-    try {
+// ===============================
+// LOAD OLD MESSAGES
+// ===============================
+useEffect(() => {
 
-      const response = await api.get(
-        `/chat/${receiverId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
+const fetchMessages = async () => {
+
+  try {
+
+    const response = await api.get(
+      `/chat/${receiverId}`,
+      {
+        headers: {
+          Authorization:
+            `Bearer ${localStorage.getItem("token")}`
         }
-      );
+      }
+    );
 
-      setMessages(response.data);
+    console.log("MESSAGES:", response.data);
 
-    } catch (error) {
+    setMessages(response.data);
 
-      console.log(error);
+  } catch (error) {
 
+    console.error(
+      "FETCH MESSAGES ERROR:",
+      error.response?.data || error.message
+    );
+
+  }
+
+};
+
+fetchMessages();
+
+
+}, [receiverId]);
+
+// ===============================
+// RECEIVE MESSAGE
+// ===============================
+useEffect(() => {
+
+const receiveMessage = (data) => {
+
+  console.log("RECEIVED MESSAGE:", data);
+
+  const senderId =
+    data.sender?._id || data.sender;
+
+  const receiver =
+    data.receiver?._id || data.receiver;
+
+  // Only add messages belonging to this conversation
+  if (
+    (senderId === receiverId && receiver === currentUserId) ||
+    (senderId === currentUserId && receiver === receiverId)
+  ) {
+
+    setMessages((prev) => [
+      ...prev,
+      data
+    ]);
+
+  }
+
+};
+
+socket.on(
+  "receive_message",
+  receiveMessage
+);
+
+return () => {
+
+  socket.off(
+    "receive_message",
+    receiveMessage
+  );
+
+};
+
+
+}, [receiverId, currentUserId]);
+
+// ===============================
+// ONLINE USERS
+// ===============================
+useEffect(() => {
+
+
+if (!currentUserId) return;
+
+socket.emit(
+  "user_online",
+  currentUserId
+);
+
+const handleOnlineUsers = (users) => {
+
+  setOnlineUsers(users);
+
+};
+
+socket.on(
+  "online_users",
+  handleOnlineUsers
+);
+
+return () => {
+
+  socket.off(
+    "online_users",
+    handleOnlineUsers
+  );
+
+};
+
+
+}, [currentUserId]);
+
+// ===============================
+// TYPING
+// ===============================
+useEffect(() => {
+
+
+const handleTyping = (data) => {
+
+  if (data?.sender === receiverId) {
+
+    setTyping(true);
+
+    setTimeout(() => {
+      setTyping(false);
+    }, 1000);
+
+  }
+
+};
+
+socket.on(
+  "typing",
+  handleTyping
+);
+
+return () => {
+
+  socket.off(
+    "typing",
+    handleTyping
+  );
+
+};
+
+
+}, [receiverId]);
+
+// ===============================
+// AUTO SCROLL
+// ===============================
+useEffect(() => {
+
+
+bottomRef.current?.scrollIntoView({
+  behavior: "smooth"
+});
+
+
+}, [messages]);
+
+// ===============================
+// SEND MESSAGE
+// ===============================
+const sendMessage = async () => {
+
+if (!message.trim()) {
+  return;
+}
+
+try {
+
+  const response = await api.post(
+    "/chat",
+    {
+      receiver: receiverId,
+      message: message.trim()
+    },
+    {
+      headers: {
+        Authorization:
+          `Bearer ${localStorage.getItem("token")}`
+      }
     }
+  );
 
-  };
+  console.log(
+    "SENT MESSAGE:",
+    response.data
+  );
 
-  // Receive new messages
-  useEffect(() => {
+  // Add message immediately for sender
+  setMessages((prev) => [
+    ...prev,
+    response.data
+  ]);
 
-    socket.on("receive_message", (data) => {
+  // Send through Socket.IO
+  socket.emit(
+    "send_message",
+    response.data
+  );
 
-      setMessages((prev) => [...prev, data]);
+  setMessage("");
 
-    });
+} catch (error) {
 
-    return () => {
+  console.error(
+    "SEND MESSAGE ERROR:",
+    error.response?.data || error.message
+  );
 
-      socket.off("receive_message");
+  alert(
+    error.response?.data?.message ||
+    "Unable to send message"
+  );
 
-    };
+}
 
-  }, []);
 
-  // Typing indicator
-  useEffect(() => {
+};
 
-    socket.on("typing", () => {
+// ===============================
+// INPUT TYPING
+// ===============================
+const handleTyping = (e) => {
 
-      setTyping(true);
 
-      setTimeout(() => {
+setMessage(e.target.value);
 
-        setTyping(false);
+socket.emit(
+  "typing",
+  {
+    sender: currentUserId,
+    receiver: receiverId
+  }
+);
 
-      }, 1000);
 
-    });
+};
 
-    return () => {
+return (
 
-      socket.off("typing");
 
-    };
+<div className="h-screen bg-gray-100 flex justify-center items-center">
 
-  }, []);
-  useEffect(() => {
+  <div className="w-full max-w-md h-[600px] bg-white rounded-lg shadow-lg flex flex-col">
 
-  const userId = localStorage.getItem("userId");
 
-  socket.emit("user_online", userId);
+    {/* HEADER */}
 
-  socket.on("online_users", (users) => {
+    <div className="bg-green-600 text-white p-4 rounded-t-lg">
 
-    setOnlineUsers(users);
+      <h1 className="text-xl font-bold">
+        Chat
+      </h1>
 
-  });
+      <p className="text-sm">
 
-  return () => {
+        {onlineUsers.includes(receiverId)
+          ? "🟢 Online"
+          : "⚫ Offline"}
 
-    socket.off("online_users");
+      </p>
 
-  };
+    </div>
 
-}, []);
 
-  // Auto-scroll
-  useEffect(() => {
+    {/* MESSAGES */}
 
-    bottomRef.current?.scrollIntoView({
-      behavior: "smooth"
-    });
+    <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
 
-  }, [messages]);
+      {messages.length === 0 ? (
 
-  // Send message
-  const sendMessage = async () => {
+        <div className="text-center text-gray-500 mt-10">
 
-    if (!message.trim()) return;
+          No messages yet.
 
-    try {
+          <p className="text-sm mt-2">
+            Start the conversation.
+          </p>
 
-      const response = await api.post(
-        "/chat",
-        {
-          receiver: receiverId,
-          message
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
+        </div>
+
+      ) : (
+
+        messages.map((msg, index) => {
+
+          const senderId =
+            msg.sender?._id || msg.sender;
+
+          const isMine =
+            senderId === currentUserId;
+
+          return (
+
+            <div
+              key={msg._id || index}
+              className={`mb-3 flex ${
+                isMine
+                  ? "justify-end"
+                  : "justify-start"
+              }`}
+            >
+
+              <div
+                className={`px-4 py-2 rounded-lg max-w-xs ${
+                  isMine
+                    ? "bg-green-500 text-white"
+                    : "bg-white text-gray-800 shadow"
+                }`}
+              >
+
+                <p>
+                  {msg.message}
+                </p>
+
+                <p className="text-xs mt-1 opacity-70">
+
+                  {msg.createdAt
+                    ? new Date(
+                        msg.createdAt
+                      ).toLocaleTimeString()
+                    : ""}
+
+                </p>
+
+              </div>
+
+            </div>
+
+          );
+
+        })
+
+      )}
+
+      <div ref={bottomRef}></div>
+
+    </div>
+
+
+    {/* TYPING */}
+
+    {typing && (
+
+      <p className="text-gray-500 text-sm px-3 py-1">
+        Typing...
+      </p>
+
+    )}
+
+
+    {/* INPUT */}
+
+    <div className="flex p-3 border-t">
+
+      <input
+        type="text"
+        value={message}
+        onChange={handleTyping}
+        onKeyDown={(e) => {
+
+          if (e.key === "Enter") {
+            sendMessage();
           }
-        }
-      );
 
-      socket.emit("send_message", response.data);
+        }}
+        placeholder="Type a message..."
+        className="flex-1 border rounded-full px-4 py-2 outline-none"
+      />
 
-      setMessages((prev) => [...prev, response.data]);
+      <button
+        onClick={sendMessage}
+        className="ml-2 bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700"
+      >
+        Send
+      </button>
 
-      setMessage("");
-
-    } catch (error) {
-
-      console.log(error);
-
-    }
-
-  };
-
-  return (
-
-    <div className="h-screen bg-gray-100 flex justify-center items-center">
-
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg flex flex-col">
-
-        {/* Header */}
-        <div className="bg-green-600 text-white p-4 rounded-t-lg">
-
-          <h1 className="text-xl font-bold">
-            Provider Name
-          </h1>
-
-          {
-onlineUsers.includes(receiverId)
-?
-<div className="flex items-center gap-3">
-
-  <img
-    src="https://i.pravatar.cc/150"
-    className="w-12 h-12 rounded-full"
-    alt=""
-  />
-
-  <div>
-
-    <h1 className="text-xl font-bold">
-      Provider Name
-    </h1>
-
-    <p className="text-sm">
-      🟢 Online
-    </p>
+    </div>
 
   </div>
 
 </div>
-:
-<p className="text-sm text-gray-200">
-  ⚫ Offline
-</p>
-}
 
-        </div>
 
-        {/* Messages */}
-        <div className="flex-1 h-96 overflow-y-auto p-4 bg-gray-100">
-
-          {
-
-            messages.map((msg, index) => (
-
-              <div
-                key={index}
-                className="mb-3 flex justify-end"
-              >
-
-                <div className="bg-green-500 text-white px-4 py-2 rounded-lg max-w-xs">
-
-                  <p>{msg.message}</p>
-
-                  <p className="text-xs mt-1">
-
-                    {msg.createdAt
-                      ? new Date(msg.createdAt).toLocaleTimeString()
-                      : ""}
-
-                  </p>
-
-                </div>
-
-              </div>
-
-            ))
-
-          }
-
-          <div ref={bottomRef}></div>
-
-        </div>
-
-        {/* Typing */}
-        {
-
-          typing && (
-
-            <p className="text-gray-500 text-sm px-3 py-1">
-
-              Typing...
-
-            </p>
-
-          )
-
-        }
-
-        {/* Input */}
-        <div className="flex p-3 border-t">
-
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => {
-
-              setMessage(e.target.value);
-
-              socket.emit("typing");
-
-            }}
-            placeholder="Type a message..."
-            className="flex-1 border rounded-full px-4 py-2 outline-none"
-          />
-
-          <button
-            onClick={sendMessage}
-            className="ml-2 bg-green-600 text-white px-5 py-2 rounded-full"
-          >
-            Send
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  );
+);
 
 }
 

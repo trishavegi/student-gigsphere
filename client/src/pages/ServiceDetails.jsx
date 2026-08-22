@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate  } from "react-router-dom";
 import api from "../services/api";
 import ServiceMap from "../components/ServiceMap";
 
 function ServiceDetails() {
 
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [service, setService] = useState(null);
   const [reason, setReason] = useState("");
@@ -131,6 +132,14 @@ const submitComplaint = async () => {
         <p>
           <b>Provider :</b> {service.user?.name}
         </p>
+        {service.user?._id && (
+  <button
+    onClick={() => navigate(`/chat/${service.user._id}`)}
+    className="mt-4 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
+  >
+    💬 Chat with Provider
+  </button>
+)}
 
       </div>
 
