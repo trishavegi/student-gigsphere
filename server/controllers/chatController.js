@@ -119,72 +119,88 @@ res.status(500).json({
 // GET RECENT CHATS
 // ONE CHAT PER PERSON
 // ===============================
+
 const getRecentChats = async (req, res) => {
-try {
-const currentUser = req.user._id;
+  try {
+    const currentUser = req.user._id;
 
-const chats = await Chat.find({
-  $or: [
-    { sender: currentUser },
-    { receiver: currentUser }
-  ]
-})
-  .populate("sender", "name email")
-  .populate("receiver", "name email")
-  .sort({ createdAt: -1 });
+    const chats = await Chat.find({
+      $or: [
+        { sender: currentUser },
+        { receiver: currentUser }
+      ]
+    })
+      .populate("sender", "name email")
+      .populate("receiver", "name email")
+      .sort({ createdAt: -1 });
 
-// Keep only the latest message for each person
-const uniqueChats = [];
-const seenUsers = new Set();
-for (const chat of chats) {
+    const uniqueChats = [];
+    const seenUsers = new Set();
 
-  // Skip broken chat records
-  if (!chat.sender || !chat.receiver) {
-    console.log("Skipping invalid chat:", chat._id);
-    continue;
-  }
+    for (const chat of chats) {
 
-  const senderId = chat.sender._id.toString();
-  const currentUserId = currentUser.toString();
+      // Ignore old/broken chat records
+      if (!chat.sender || !chat.receiver) {
+        console.log(
+          "Skipping invalid chat:",
+          chat._id.toString()
+        );
+        continue;
+      }
 
-  const otherUser =
-    senderId === currentUserId
-      ? chat.receiver
-      : chat.sender;
+      const senderId = chat.sender._id.toString();
+      const receiverId = chat.receiver._id.toString();
+      const currentUserId = currentUser.toString();
 
-  if (!otherUser || !otherUser._id) {
-    continue;
-  }
+      let otherUser;
 
-  const otherUserId = otherUser._id.toString();
+      if (senderId === currentUserId) {
+        otherUser = chat.receiver;
+      } else if (receiverId === currentUserId) {
+        otherUser = chat.sender;
+      } else {
+        continue;
+      }
 
-  if (!seenUsers.has(otherUserId)) {
+      if (!otherUser || !otherUser._id) {
+        continue;
+      }
 
+      const otherUserId = otherUser._id.toString();
 
-    seenUsers.add(otherUserId);
+      if (!seenUsers.has(otherUserId)) {
 
-    uniqueChats.push({
-      _id: chat._id,
-      message: chat.message,
-      createdAt: chat.createdAt,
-      isRead: chat.isRead,
-      user: otherUser
+        seenUsers.add(otherUserId);
+
+        uniqueChats.push({
+          _id: chat._id,
+          message: chat.message,
+          createdAt: chat.createdAt,
+          isRead: chat.isRead,
+          user: {
+            _id: otherUser._id,
+            name: otherUser.name,
+            email: otherUser.email
+          }
+        });
+      }
+    }
+
+    console.log("RECENT CHATS:", uniqueChats);
+
+    res.status(200).json(uniqueChats);
+
+  } catch (error) {
+
+    console.error(
+      "GET RECENT CHATS ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      message: error.message
     });
   }
-}
-
-res.status(200).json(uniqueChats);
-
-
-} catch (error) {
-console.error("GET RECENT CHATS ERROR:", error);
-
-res.status(500).json({
-  message: error.message
-});
-
-
-}
 };
 
 // ===============================
