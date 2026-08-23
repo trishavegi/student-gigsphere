@@ -5,6 +5,18 @@ import api from "../services/api";
 
 const socket = io("https://student-gigsphere.onrender.com");
 
+socket.on("connect", () => {
+  console.log("🟢 SOCKET CONNECTED:", socket.id);
+});
+
+socket.on("connect_error", (error) => {
+  console.error("🔴 SOCKET CONNECTION ERROR:", error.message);
+});
+
+socket.on("disconnect", () => {
+  console.log("🔴 SOCKET DISCONNECTED");
+});
+
 function Chat() {
 
 const { id: receiverId } = useParams();
@@ -62,81 +74,154 @@ fetchMessages();
 // ===============================
 useEffect(() => {
 
-const receiveMessage = (data) => {
+  const receiveMessage = (data) => {
 
-  console.log("RECEIVED MESSAGE:", data);
+    console.log("========== RECEIVED SOCKET MESSAGE ==========");
+    console.log("DATA:", data);
 
-  const senderId =
-    data.sender?._id || data.sender;
+    const senderId = String(
+      data.sender?._id || data.sender || ""
+    );
 
-  const receiver =
-    data.receiver?._id || data.receiver;
+    const receiverIdFromMessage = String(
+      data.receiver?._id || data.receiver || ""
+    );
 
-  // Only add messages belonging to this conversation
-  if (
-    (senderId === receiverId && receiver === currentUserId) ||
-    (senderId === currentUserId && receiver === receiverId)
-  ) {
+    const currentId = String(
+      currentUserId || ""
+    );
 
-    setMessages((prev) => [
-      ...prev,
-      data
-    ]);
+    const chatUserId = String(
+      receiverId || ""
+    );
 
-  }
+    console.log("Sender ID:", senderId);
+    console.log("Receiver ID:", receiverIdFromMessage);
+    console.log("Current User ID:", currentId);
+    console.log("Chat User ID:", chatUserId);
 
-};
+    const belongsToChat =
+      (
+        senderId === chatUserId &&
+        receiverIdFromMessage === currentId
+      ) ||
+      (
+        senderId === currentId &&
+        receiverIdFromMessage === chatUserId
+      );
 
+    console.log(
+      "BELONGS TO THIS CHAT:",
+      belongsToChat
+    );
+
+    if (belongsToChat) {
+
+      setMessages((prev) => {
+
+        // Prevent duplicate message
+        if (
+          data._id &&
+          prev.some(
+            (msg) => msg._id === data._id
+          )
+        ) {
+          return prev;
+        }
+
+        return [
+          ...prev,
+          data
+        ];
+
+      });
+
+    }
+
+  };
 socket.on(
-  "receive_message",
-  receiveMessage
-);
-
-return () => {
-
-  socket.off(
     "receive_message",
     receiveMessage
   );
 
-};
+  return () => {
 
+    socket.off(
+      "receive_message",
+      receiveMessage
+    );
 
-}, [receiverId, currentUserId]);
+  };
+
+}, [
+  receiverId,
+  currentUserId
+]);
 
 // ===============================
 // ONLINE USERS
 // ===============================
 useEffect(() => {
 
+  if (!currentUserId) {
+    console.log("🔴 USER ID NOT FOUND");
+    return;
+  }
 
-if (!currentUserId) return;
+  console.log(
+    "🟢 REGISTERING USER ONLINE:",
+    currentUserId
+  );
 
-socket.emit(
-  "user_online",
-  currentUserId
-);
+  const registerUser = () => {
 
-const handleOnlineUsers = (users) => {
+    console.log(
+      "📡 Sending user_online:",
+      currentUserId
+    );
 
-  setOnlineUsers(users);
+    socket.emit(
+      "user_online",
+      currentUserId
+    );
 
-};
+  };
 
-socket.on(
-  "online_users",
-  handleOnlineUsers
-);
+  if (socket.connected) {
+    registerUser();
+  } else {
+    socket.on("connect", registerUser);
+  }
 
-return () => {
+  const handleOnlineUsers = (users) => {
 
-  socket.off(
+    console.log(
+      "👥 ONLINE USERS:",
+      users
+    );
+
+    setOnlineUsers(users);
+
+  };
+
+  socket.on(
     "online_users",
     handleOnlineUsers
   );
 
-};
+  return () => {
 
+    socket.off(
+      "connect",
+      registerUser
+    );
+
+    socket.off(
+      "online_users",
+      handleOnlineUsers
+    );
+
+  };
 
 }, [currentUserId]);
 

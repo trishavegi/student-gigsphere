@@ -160,27 +160,51 @@ res.status(500).json({
 
 const getRecentChats = async (req, res) => {
   try {
-    const currentUser = req.user._id;
+    console.log("========== GET RECENT CHATS ==========");
 
+    console.log("CURRENT USER ID:", req.user);
+
+    // Find the logged-in user
+    const currentUser = await User.findById(req.user);
+
+    if (!currentUser) {
+      console.log("CURRENT USER NOT FOUND:", req.user);
+
+      return res.status(401).json({
+        message: "User not found. Please login again."
+      });
+    }
+
+    console.log(
+      "CURRENT USER:",
+      currentUser.name,
+      currentUser.email,
+      currentUser._id.toString()
+    );
+
+    // Find all chats involving this user
     const chats = await Chat.find({
       $or: [
-        { sender: currentUser },
-        { receiver: currentUser }
+        { sender: currentUser._id },
+        { receiver: currentUser._id }
       ]
     })
       .populate("sender", "name email")
       .populate("receiver", "name email")
       .sort({ createdAt: -1 });
 
+    console.log("TOTAL CHATS FOUND:", chats.length);
+
     const uniqueChats = [];
     const seenUsers = new Set();
 
     for (const chat of chats) {
 
-      // Ignore old/broken chat records
+      console.log("CHECKING CHAT:", chat._id);
+
       if (!chat.sender || !chat.receiver) {
         console.log(
-          "Skipping invalid chat:",
+          "SKIPPING BROKEN CHAT:",
           chat._id.toString()
         );
         continue;
@@ -188,19 +212,24 @@ const getRecentChats = async (req, res) => {
 
       const senderId = chat.sender._id.toString();
       const receiverId = chat.receiver._id.toString();
-      const currentUserId = currentUser.toString();
+      const currentUserId = currentUser._id.toString();
 
-      let otherUser;
+      console.log("SENDER:", senderId);
+      console.log("RECEIVER:", receiverId);
+      console.log("CURRENT USER:", currentUserId);
+
+      let otherUser = null;
 
       if (senderId === currentUserId) {
         otherUser = chat.receiver;
-      } else if (receiverId === currentUserId) {
-        otherUser = chat.sender;
-      } else {
-        continue;
       }
 
-      if (!otherUser || !otherUser._id) {
+      if (receiverId === currentUserId) {
+        otherUser = chat.sender;
+      }
+
+      if (!otherUser) {
+        console.log("NO OTHER USER FOUND");
         continue;
       }
 
@@ -215,6 +244,7 @@ const getRecentChats = async (req, res) => {
           message: chat.message,
           createdAt: chat.createdAt,
           isRead: chat.isRead,
+
           user: {
             _id: otherUser._id,
             name: otherUser.name,
@@ -224,16 +254,16 @@ const getRecentChats = async (req, res) => {
       }
     }
 
-    console.log("RECENT CHATS:", uniqueChats);
+    console.log("========== FINAL RECENT CHATS ==========");
+    console.log(uniqueChats);
 
     res.status(200).json(uniqueChats);
 
   } catch (error) {
 
-    console.error(
-      "GET RECENT CHATS ERROR:",
-      error
-    );
+    console.error("========== GET RECENT CHATS ERROR ==========");
+    console.error(error);
+    console.error(error.stack);
 
     res.status(500).json({
       message: error.message
