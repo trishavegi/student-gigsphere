@@ -1,49 +1,8 @@
-
 import { useEffect, useState } from "react";
-import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-const socket = io("https://student-gigsphere.onrender.com");
 
 function ChatList() {
-  const currentUserId = localStorage.getItem("userId");
-
-useEffect(() => {
-
-  if (!currentUserId) {
-    return;
-  }
-
-  const registerUser = () => {
-    console.log("USER ONLINE FROM CHAT LIST:", currentUserId);
-
-    socket.emit("user_online", currentUserId);
-  };
-
-  if (socket.connected) {
-    registerUser();
-  } else {
-    socket.on("connect", registerUser);
-  }
-
-  const receiveMessage = (data) => {
-
-    console.log("CHAT LIST RECEIVED MESSAGE:", data);
-
-    // Refresh chat list when a new message arrives
-    fetchChats();
-  };
-
-  socket.on("receive_message", receiveMessage);
-
-  return () => {
-
-    socket.off("connect", registerUser);
-    socket.off("receive_message", receiveMessage);
-
-  };
-
-}, [currentUserId]);
   const navigate = useNavigate();
 
   const [chats, setChats] = useState([]);
@@ -58,27 +17,32 @@ useEffect(() => {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        console.log("No login token found");
+        console.log("NO TOKEN FOUND");
         setLoading(false);
         return;
       }
 
       const response = await api.get("/chat", {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       });
 
       console.log("CHAT RESPONSE:", response.data);
 
       setChats(response.data);
+
     } catch (error) {
+
       console.error(
         "CHAT LIST ERROR:",
         error.response?.data || error.message
       );
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
@@ -104,32 +68,34 @@ useEffect(() => {
       </h1>
 
       {chats.length === 0 ? (
+
         <div className="p-10 text-center text-gray-500">
+
           <p className="text-lg">
             No chats yet.
           </p>
 
           <p className="text-sm mt-2">
-            Start a conversation with a provider.
+            Start a conversation.
           </p>
+
         </div>
+
       ) : (
+
         chats.map((chat) => {
 
-          // Backend sends the other person as "user"
           const otherUser = chat.user;
 
-          if (!otherUser || !otherUser._id) {
+          if (!otherUser) {
             return null;
           }
-
-          const otherUserId = otherUser._id.toString();
 
           return (
             <div
               key={chat._id}
               onClick={() =>
-                navigate(`/chat/${otherUserId}`)
+                navigate(`/chat/${otherUser._id}`)
               }
               className="p-4 border-b hover:bg-gray-100 cursor-pointer"
             >
@@ -170,11 +136,18 @@ useEffect(() => {
 
                 </div>
 
+                {/* Unread */}
+                {!chat.isRead && (
+                  <div className="w-3 h-3 bg-red-500 rounded-full">
+                  </div>
+                )}
+
               </div>
 
             </div>
           );
         })
+
       )}
 
     </div>
@@ -182,4 +155,3 @@ useEffect(() => {
 }
 
 export default ChatList;
-

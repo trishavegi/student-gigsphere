@@ -116,43 +116,60 @@ const sendMessage = async (req, res) => {
 // GET MESSAGES BETWEEN TWO USERS
 // ===============================
 const getMessages = async (req, res) => {
-try {
-const currentUser = req.user;
-const currentUserId = currentUser.toString();
-const otherUser = req.params.id;
+  try {
+    console.log("========== GET MESSAGES ==========");
 
-```
-const chats = await Chat.find({
-  $or: [
-    {
-      sender: currentUser,
-      receiver: otherUser
-    },
-    {
-      sender: otherUser,
-      receiver: currentUser
+    console.log("CURRENT USER:", req.user);
+    console.log("OTHER USER:", req.params.id);
+
+    const currentUserId = req.user;
+    const otherUserId = req.params.id;
+
+    if (!currentUserId) {
+      return res.status(401).json({
+        message: "User not authenticated"
+      });
     }
-  ]
-})
-  .populate("sender", "name email")
-  .populate("receiver", "name email")
-  .sort({ createdAt: 1 });
 
-res.status(200).json(chats);
-```
+    if (!otherUserId) {
+      return res.status(400).json({
+        message: "Other user ID is required"
+      });
+    }
 
-} catch (error) {
-console.error("GET MESSAGES ERROR:", error);
+    const chats = await Chat.find({
+      $or: [
+        {
+          sender: currentUserId,
+          receiver: otherUserId
+        },
+        {
+          sender: otherUserId,
+          receiver: currentUserId
+        }
+      ]
+    })
+      .populate("sender", "name email")
+      .populate("receiver", "name email")
+      .sort({ createdAt: 1 });
 
-```
-res.status(500).json({
-  message: error.message
-});
-```
+    console.log("TOTAL MESSAGES:", chats.length);
+    console.log("MESSAGES:", chats);
 
-}
+    return res.status(200).json(chats);
+
+  } catch (error) {
+
+    console.error("========== GET MESSAGES ERROR ==========");
+    console.error(error);
+    console.error(error.message);
+    console.error(error.stack);
+
+    return res.status(500).json({
+      message: error.message
+    });
+  }
 };
-
 // ===============================
 // GET RECENT CHATS
 // ONE CHAT PER PERSON
