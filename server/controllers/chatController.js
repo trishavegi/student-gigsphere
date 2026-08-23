@@ -24,7 +24,7 @@ const sendMessage = async (req, res) => {
     }
 
     // Get sender from database
-    const senderUser = await User.findById(req.user._id);
+    const senderUser = await User.findById(req.user);
 
     if (!senderUser) {
       console.log("SENDER USER NOT FOUND:", req.user._id);
@@ -117,7 +117,7 @@ const sendMessage = async (req, res) => {
 // ===============================
 const getMessages = async (req, res) => {
 try {
-const currentUser = req.user._id;
+const currentUser = req.user;
 const currentUserId = currentUser.toString();
 const otherUser = req.params.id;
 
@@ -249,7 +249,7 @@ try {
 
 
 const count = await Chat.countDocuments({
-  receiver: req.user._id,
+  receiver: req.user,
   isRead: false
 });
 
@@ -280,7 +280,7 @@ try {
 await Chat.updateMany(
   {
     sender: req.params.id,
-    receiver: req.user._id,
+    receiver: req.user,
     isRead: false
   },
   {
