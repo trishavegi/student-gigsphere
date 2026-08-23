@@ -61,7 +61,19 @@ io.on("connection", (socket) => {
 
   socket.on("user_online", (userId) => {
 
+    if (!userId) {
+      console.log("No userId received");
+      return;
+    }
+
     onlineUsers[userId] = socket.id;
+
+    // Put user into their own room
+    socket.join(userId.toString());
+
+    console.log("USER ONLINE:", userId);
+    console.log("SOCKET ID:", socket.id);
+    console.log("ONLINE USERS:", onlineUsers);
 
     io.emit(
       "online_users",
@@ -69,31 +81,81 @@ io.on("connection", (socket) => {
     );
 
   });
+ socket.on("send_message", (data) => {
 
-  socket.on("send_message", (data) => {
+    try {
 
-    socket.broadcast.emit(
-      "receive_message",
+      console.log("========== SOCKET MESSAGE ==========");
+
+      console.log("DATA:", data);
+
+      const receiverId =
+        data.receiver?._id || data.receiver;
+
+      console.log("RECEIVER ID:", receiverId);
+
+      if (!receiverId) {
+
+        console.log("No receiver ID found");
+
+        return;
+      }
+
+      // Send directly to receiver's room
+      io.to(receiverId.toString()).emit(
+        "receive_message",
+        data
+      );
+
+      console.log(
+        "MESSAGE SENT TO RECEIVER ROOM:",
+        receiverId
+      );
+
+    } catch (error) {
+
+      console.error(
+        "SOCKET MESSAGE ERROR:",
+        error
+      );
+
+    }
+
+  });
+  socket.on("typing", (data) => {
+
+    const receiverId =
+      data?.receiver;
+
+    if (!receiverId) {
+      return;
+    }
+
+    io.to(receiverId.toString()).emit(
+      "typing",
       data
     );
 
   });
+ socket.on("disconnect", () => {
 
-  socket.on("typing", () => {
+    console.log(
+      "User disconnected:",
+      socket.id
+    );
 
-    socket.broadcast.emit("typing");
+    for (const userId in onlineUsers) {
 
-  });
-
-  socket.on("disconnect", () => {
-
-    console.log("User disconnected:", socket.id);
-
-    for (let userId in onlineUsers) {
-
-      if (onlineUsers[userId] === socket.id) {
+      if (
+        onlineUsers[userId] === socket.id
+      ) {
 
         delete onlineUsers[userId];
+
+        console.log(
+          "USER OFFLINE:",
+          userId
+        );
 
       }
 
@@ -105,8 +167,8 @@ io.on("connection", (socket) => {
     );
 
   });
-
 });
+
 
 const PORT = process.env.PORT || 5000;
 
