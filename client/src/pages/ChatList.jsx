@@ -1,9 +1,49 @@
 
 import { useEffect, useState } from "react";
+import io from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+const socket = io("https://student-gigsphere.onrender.com");
 
 function ChatList() {
+  const currentUserId = localStorage.getItem("userId");
+
+useEffect(() => {
+
+  if (!currentUserId) {
+    return;
+  }
+
+  const registerUser = () => {
+    console.log("USER ONLINE FROM CHAT LIST:", currentUserId);
+
+    socket.emit("user_online", currentUserId);
+  };
+
+  if (socket.connected) {
+    registerUser();
+  } else {
+    socket.on("connect", registerUser);
+  }
+
+  const receiveMessage = (data) => {
+
+    console.log("CHAT LIST RECEIVED MESSAGE:", data);
+
+    // Refresh chat list when a new message arrives
+    fetchChats();
+  };
+
+  socket.on("receive_message", receiveMessage);
+
+  return () => {
+
+    socket.off("connect", registerUser);
+    socket.off("receive_message", receiveMessage);
+
+  };
+
+}, [currentUserId]);
   const navigate = useNavigate();
 
   const [chats, setChats] = useState([]);
