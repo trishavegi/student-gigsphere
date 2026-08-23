@@ -28,6 +28,10 @@ function Login() {
         response.data.token
       );
       localStorage.setItem(
+  "userId",
+  response.data.user._id
+);
+      localStorage.setItem(
   "user",
   JSON.stringify(response.data.user)
 );
