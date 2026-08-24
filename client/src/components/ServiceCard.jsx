@@ -9,9 +9,11 @@ function ServiceCard({ service }) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
+  if (!service.isDemo) {
     fetchReviews();
     checkFavorite();
-  }, []);
+  }
+}, [service]);
 
   const fetchReviews = async () => {
 
@@ -59,6 +61,10 @@ function ServiceCard({ service }) {
 };
 
   const handleBooking = async () => {
+     if (service.isDemo) {
+    alert("This is a demo service. Please choose a real service to book.");
+    return;
+  }
 
     try {
 
@@ -87,6 +93,10 @@ function ServiceCard({ service }) {
   };
 
 const handleFavorite = async () => {
+  if (service.isDemo) {
+    alert("Demo services cannot be added to favorites.");
+    return;
+  }
 
   try {
 

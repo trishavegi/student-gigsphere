@@ -2,7 +2,86 @@ import { useEffect, useState } from "react";
 import { getDistance } from "geolib";
 import api from "../services/api";
 import ServiceCard from "../components/ServiceCard";
-
+const demoServices = [
+  {
+    _id: "demo1",
+    title: "Math Tutoring",
+    description:
+      "Personalized mathematics tutoring for school and college students.",
+    price: 300,
+    category: "Tutoring",
+    user: {
+      _id: "demo-user-1",
+      name: "Rahul"
+    },
+    isDemo: true
+  },
+  {
+    _id: "demo2",
+    title: "Logo Design",
+    description:
+      "Creative and professional logo designs for students and small businesses.",
+    price: 500,
+    category: "Design",
+    user: {
+      _id: "demo-user-2",
+      name: "Sneha"
+    },
+    isDemo: true
+  },
+  {
+    _id: "demo3",
+    title: "Python Programming Help",
+    description:
+      "Get help with Python assignments, coding problems and projects.",
+    price: 400,
+    category: "Coding",
+    user: {
+      _id: "demo-user-3",
+      name: "Arjun"
+    },
+    isDemo: true
+  },
+  {
+    _id: "demo4",
+    title: "College Event Photography",
+    description:
+      "Affordable photography services for college events and functions.",
+    price: 800,
+    category: "Photography",
+    user: {
+      _id: "demo-user-4",
+      name: "Priya"
+    },
+    isDemo: true
+  },
+  {
+    _id: "demo5",
+    title: "Assignment Typing",
+    description:
+      "Fast and neat typing services for college assignments and documents.",
+    price: 200,
+    category: "Academic",
+    user: {
+      _id: "demo-user-5",
+      name: "Kiran"
+    },
+    isDemo: true
+  },
+  {
+    _id: "demo6",
+    title: "Video Editing",
+    description:
+      "Professional video editing for college projects and social media.",
+    price: 600,
+    category: "Editing",
+    user: {
+      _id: "demo-user-6",
+      name: "Anjali"
+    },
+    isDemo: true
+  }
+];
 function Home() {
 
   const [services, setServices] = useState([]);
@@ -18,7 +97,11 @@ function Home() {
     try {
 
       const response = await api.get("/services");
-      setServices(response.data);
+      if (response.data.length === 0) {
+  setServices(demoServices);
+} else {
+  setServices(response.data);
+}
 
     } catch (error) {
 
@@ -188,6 +271,98 @@ function Home() {
         )}
 
       </div>
+      {/* HOW IT WORKS */}
+
+<section className="mt-16">
+
+  <div className="text-center mb-10">
+
+    <h2 className="text-3xl font-bold text-gray-800">
+      How Student GigSphere Works
+    </h2>
+
+    <p className="text-gray-500 mt-3">
+      Find the right student service in just a few simple steps.
+    </p>
+
+  </div>
+
+  <div className="grid md:grid-cols-3 gap-8">
+
+    {/* STEP 1 */}
+
+    <div className="bg-white rounded-2xl shadow-md p-8 text-center">
+
+      <div className="text-4xl mb-4">
+        📝
+      </div>
+
+      <div className="text-blue-600 font-bold text-lg mb-2">
+        Step 1
+      </div>
+
+      <h3 className="text-xl font-bold mb-3">
+        Post or Find a Gig
+      </h3>
+
+      <p className="text-gray-600">
+        Post your task or search for services offered by students
+        around you.
+      </p>
+
+    </div>
+
+
+    {/* STEP 2 */}
+
+    <div className="bg-white rounded-2xl shadow-md p-8 text-center">
+
+      <div className="text-4xl mb-4">
+        💬
+      </div>
+
+      <div className="text-blue-600 font-bold text-lg mb-2">
+        Step 2
+      </div>
+
+      <h3 className="text-xl font-bold mb-3">
+        Get Offers & Connect
+      </h3>
+
+      <p className="text-gray-600">
+        Connect with suitable students, compare offers and
+        discuss the work through chat.
+      </p>
+
+    </div>
+
+
+    {/* STEP 3 */}
+
+    <div className="bg-white rounded-2xl shadow-md p-8 text-center">
+
+      <div className="text-4xl mb-4">
+        ✅
+      </div>
+
+      <div className="text-blue-600 font-bold text-lg mb-2">
+        Step 3
+      </div>
+
+      <h3 className="text-xl font-bold mb-3">
+        Choose & Complete
+      </h3>
+
+      <p className="text-gray-600">
+        Choose the right provider, complete your task and
+        leave a review.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
 
     </div>
 
