@@ -23,6 +23,8 @@ import Reports from "./pages/admin/Reports";
 import Complaints from "./pages/admin/Complaints";
 import Settings from "./pages/admin/Settings";
 import Providers from "./pages/admin/Providers";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 function AppContent() {
   const location = useLocation();
 
@@ -77,6 +79,8 @@ function AppContent() {
         <Route path="/create-service" element={<CreateService />} />
         <Route path="/service/:id" element={<ServiceDetails />} />
         <Route path="/admin/analytics" element={<Analytics />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
 
       </Routes>
     </>

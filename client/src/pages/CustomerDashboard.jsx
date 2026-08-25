@@ -117,147 +117,330 @@ const cancelBooking = async (bookingId) => {
 
 };
 
-  return (
+ return (
 
-<div className="p-8 bg-gray-100 min-h-screen">
+  <div className="min-h-screen bg-slate-50">
 
-<h1 className="text-3xl font-bold mb-8">
-Customer Dashboard
-</h1>
+    {/* Header */}
 
-<div className="grid md:grid-cols-2 gap-5 mb-8">
+    <section className="bg-gradient-to-r from-slate-900 via-blue-900 to-teal-800 text-white">
 
-<div className="bg-blue-500 text-white p-5 rounded-xl shadow">
+      <div className="max-w-7xl mx-auto px-6 py-12">
 
-<h2 className="text-xl font-bold">
-📅 Bookings
-</h2>
+        <p className="text-teal-300 font-semibold uppercase tracking-wider">
+          Student GigSphere
+        </p>
 
-<p className="text-3xl mt-3">
-{bookings.length}
-</p>
+        <h1 className="text-4xl md:text-5xl font-bold mt-2">
+          Customer Dashboard
+        </h1>
 
-</div>
-
-<div className="bg-pink-500 text-white p-5 rounded-xl shadow">
-
-<h2 className="text-xl font-bold">
-❤️ Favorites
-</h2>
-
-<p className="text-3xl mt-3">
-{favorites.length}
-</p>
-
-</div>
-
-</div>
-
-<h2 className="text-2xl font-bold mb-5">
-📅 My Bookings
-</h2>
-{
-  bookings.map((booking) => (
-
-    <div
-      key={booking._id}
-className={`shadow rounded-xl p-5 mb-5 ${
-booking.status === "cancelled"
-? "bg-gray-200"
-: "bg-white"
-}`}    >
-
-      <h3 className="text-xl font-bold">
-  {booking.service?.title || "Service unavailable"}
-</h3>
-
-      <p>
-  Provider : {booking.provider?.name || "Provider unavailable"}
-</p>
-
-      <p>
-  Price : ₹{booking.service?.price ?? "N/A"}
-</p>
-
-      <p>
-Status : {booking.status}
-</p>
-<p className="text-gray-500 text-sm">
-Booked on {new Date(booking.createdAt).toLocaleDateString()}
-</p>
-       {
-booking.status === "pending" ? (
-
-<button
-onClick={() => cancelBooking(booking._id)}
-className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
->
-Cancel Booking
-</button>
-
-) : booking.status === "cancelled" ? (
-
-<button
-disabled
-className="mt-4 bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed"
->
-Booking Cancelled
-</button>
-
-) : null
-}
-
-    </div>
-
-  ))
-}
-
-<h2 className="text-2xl font-bold mt-10 mb-5">
-  ❤️ My Favorite Services
-</h2>
-
-<div className="grid md:grid-cols-2 gap-5">
-
-  {
-    favorites.map((fav) => (
-
-      <div
-        key={fav._id}
-        className="bg-white shadow rounded-xl p-5 relative"
-      >
-
-        <h3 className="text-xl font-bold">
-  {fav.service?.title || "Service unavailable"}
-</h3>
-
-<p>
-  📍 {fav.service?.location || "Location unavailable"}
-</p>
-
-<p>
-  ₹ {fav.service?.price ?? "N/A"}
-</p>
-
-        <button
-          onClick={() => removeFavorite(fav.service._id)}
-          disabled={!fav.service}
-          className="absolute top-4 right-4 text-red-500 text-2xl"
-        >
-          ❤️
-        </button>
+        <p className="text-slate-300 mt-3">
+          Manage your bookings and favorite services in one place.
+        </p>
 
       </div>
 
-    ))
-  }
-
-</div>
+    </section>
 
 
-</div>
+    {/* Dashboard content */}
+
+    <div className="max-w-7xl mx-auto px-6 py-10">
+
+
+      {/* Statistics */}
+
+      <div className="grid md:grid-cols-2 gap-6 mb-12">
+
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <p className="text-slate-500 font-medium">
+                Total Bookings
+              </p>
+
+              <p className="text-4xl font-bold text-blue-700 mt-2">
+                {bookings.length}
+              </p>
+
+            </div>
+
+            <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-2xl">
+              📅
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <p className="text-slate-500 font-medium">
+                Favorite Services
+              </p>
+
+              <p className="text-4xl font-bold text-teal-600 mt-2">
+                {favorites.length}
+              </p>
+
+            </div>
+
+            <div className="w-14 h-14 bg-teal-100 rounded-full flex items-center justify-center text-2xl">
+              ❤️
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      {/* Bookings */}
+
+      <section>
+
+        <div className="flex items-center justify-between mb-6">
+
+          <div>
+
+            <p className="text-blue-600 font-semibold uppercase text-sm">
+              Your Activity
+            </p>
+
+            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+              My Bookings
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        {bookings.length === 0 ? (
+
+          <div className="bg-white border rounded-2xl p-10 text-center">
+
+            <div className="text-5xl mb-4">
+              📅
+            </div>
+
+            <h3 className="text-xl font-bold text-slate-700">
+              No bookings yet
+            </h3>
+
+            <p className="text-slate-500 mt-2">
+              Explore services and book your first service.
+            </p>
+
+          </div>
+
+        ) : (
+
+          <div className="space-y-5">
+
+            {bookings.map((booking) => (
+
+              <div
+                key={booking._id}
+                className={`bg-white border rounded-2xl p-6 shadow-sm ${
+                  booking.status === "cancelled"
+                    ? "opacity-70"
+                    : ""
+                }`}
+              >
+
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+
+                  <div>
+
+                    <h3 className="text-xl font-bold text-slate-800">
+                      {booking.service?.title ||
+                        "Service unavailable"}
+                    </h3>
+
+                    <p className="text-slate-500 mt-2">
+                      👤 Provider:{" "}
+                      <span className="font-semibold text-slate-700">
+                        {booking.provider?.name ||
+                          "Provider unavailable"}
+                      </span>
+                    </p>
+
+                    <p className="text-slate-500 mt-1">
+                      📅 Booked on{" "}
+                      {new Date(
+                        booking.createdAt
+                      ).toLocaleDateString()}
+                    </p>
+
+                  </div>
+
+
+                  <div className="text-left md:text-right">
+
+                    <p className="text-2xl font-bold text-teal-600">
+                      ₹{booking.service?.price ?? "N/A"}
+                    </p>
+
+                    <span
+                      className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${
+                        booking.status === "pending"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : booking.status === "cancelled"
+                          ? "bg-red-100 text-red-700"
+                          : booking.status === "accepted"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-slate-100 text-slate-700"
+                      }`}
+                    >
+                      {booking.status}
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                {/* Cancel button */}
+
+                {booking.status === "pending" && (
+
+                  <button
+                    onClick={() =>
+                      cancelBooking(booking._id)
+                    }
+                    className="mt-5 bg-red-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-red-600 transition"
+                  >
+                    Cancel Booking
+                  </button>
+
+                )}
+
+                {booking.status === "cancelled" && (
+
+                  <button
+                    disabled
+                    className="mt-5 bg-slate-300 text-slate-600 px-5 py-2 rounded-lg cursor-not-allowed"
+                  >
+                    Booking Cancelled
+                  </button>
+
+                )}
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
+
+      </section>
+
+
+      {/* Favorites */}
+
+      <section className="mt-14">
+
+        <div className="mb-6">
+
+          <p className="text-teal-600 font-semibold uppercase text-sm">
+            Saved Services
+          </p>
+
+          <h2 className="text-3xl font-bold text-slate-800 mt-1">
+            My Favorite Services
+          </h2>
+
+        </div>
+
+
+        {favorites.length === 0 ? (
+
+          <div className="bg-white border rounded-2xl p-10 text-center">
+
+            <div className="text-5xl mb-4">
+              🤍
+            </div>
+
+            <h3 className="text-xl font-bold text-slate-700">
+              No favorite services
+            </h3>
+
+            <p className="text-slate-500 mt-2">
+              Save services you are interested in to find them easily later.
+            </p>
+
+          </div>
+
+        ) : (
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {favorites.map((fav) => (
+
+              <div
+                key={fav._id}
+                className="relative bg-white border rounded-2xl p-6 shadow-sm hover:shadow-lg transition"
+              >
+
+                <button
+                  onClick={() =>
+                    removeFavorite(fav.service?._id)
+                  }
+                  disabled={!fav.service}
+                  className="absolute top-4 right-4 text-2xl hover:scale-110 transition disabled:opacity-50"
+                  title="Remove from favorites"
+                >
+                  ❤️
+                </button>
+
+
+                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center text-xl mb-4">
+                  ⭐
+                </div>
+
+
+                <h3 className="text-xl font-bold text-slate-800 pr-8">
+                  {fav.service?.title ||
+                    "Service unavailable"}
+                </h3>
+
+
+                <p className="text-slate-500 mt-3">
+                  📍{" "}
+                  {fav.service?.location ||
+                    "Location unavailable"}
+                </p>
+
+
+                <p className="text-2xl font-bold text-teal-600 mt-4">
+                  ₹{fav.service?.price ?? "N/A"}
+                </p>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
+
+      </section>
+
+    </div>
+
+  </div>
 
 );
-
-}
-
-export default CustomerDashboard;
+} export default CustomerDashboard;

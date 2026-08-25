@@ -1,4 +1,4 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../services/api";
 import ServiceCard from "../components/ServiceCard";
 
@@ -7,34 +7,37 @@ function Home() {
   const [keyword, setKeyword] = useState("");
   const [distanceFilter, setDistanceFilter] = useState(null);
   const [realServices, setRealServices] = useState([]);
+
+  // Fetch real services from backend
   useEffect(() => {
-  fetchRealServices();
-}, []);
+    fetchRealServices();
+  }, []);
 
-const fetchRealServices = async () => {
+  const fetchRealServices = async () => {
 
-  try {
+    try {
 
-    const response = await api.get("/services");
+      const response = await api.get("/services");
 
-    console.log("REAL SERVICES:", response.data);
+      console.log("REAL SERVICES:", response.data);
 
-    setRealServices(response.data);
+      setRealServices(response.data);
 
-  } catch (error) {
+    } catch (error) {
 
-    console.log("Failed to load real services:", error);
+      console.log("Failed to load real services:", error);
 
-  }
+    }
 
-};
+  };
 
-  // Dummy services for demonstration
+  // Demo services
   const dummyServices = [
     {
       _id: "demo1",
       title: "Math Tutoring",
-      description: "I can help school and college students with Mathematics.",
+      description:
+        "Get simple and friendly Mathematics tutoring from a student.",
       price: 300,
       category: "Tutoring",
       distance: 2,
@@ -47,7 +50,8 @@ const fetchRealServices = async () => {
     {
       _id: "demo2",
       title: "Logo Design",
-      description: "I will create a simple and professional logo for your project.",
+      description:
+        "Professional and creative logo designs for student projects.",
       price: 500,
       category: "Design",
       distance: 4,
@@ -60,7 +64,8 @@ const fetchRealServices = async () => {
     {
       _id: "demo3",
       title: "Python Programming Help",
-      description: "Get help with Python programming and college assignments.",
+      description:
+        "Get help with Python programming and college assignments.",
       price: 400,
       category: "Coding",
       distance: 7,
@@ -73,7 +78,8 @@ const fetchRealServices = async () => {
     {
       _id: "demo4",
       title: "Notes Preparation",
-      description: "Well-organized notes for college subjects and exams.",
+      description:
+        "Well-organized notes for college subjects and exam preparation.",
       price: 200,
       category: "Notes",
       distance: 9,
@@ -86,7 +92,8 @@ const fetchRealServices = async () => {
     {
       _id: "demo5",
       title: "Photography Service",
-      description: "Affordable photography for college events and projects.",
+      description:
+        "Affordable photography for college events and projects.",
       price: 800,
       category: "Photography",
       distance: 12,
@@ -99,7 +106,8 @@ const fetchRealServices = async () => {
     {
       _id: "demo6",
       title: "Web Development",
-      description: "I can help build simple websites using React.",
+      description:
+        "Build simple and attractive websites using modern technologies.",
       price: 1000,
       category: "Coding",
       distance: 15,
@@ -112,7 +120,8 @@ const fetchRealServices = async () => {
     {
       _id: "demo7",
       title: "English Speaking Practice",
-      description: "Practice English conversation and improve your confidence.",
+      description:
+        "Practice English conversation and improve your communication skills.",
       price: 250,
       category: "Tutoring",
       distance: 18,
@@ -125,7 +134,8 @@ const fetchRealServices = async () => {
     {
       _id: "demo8",
       title: "Video Editing",
-      description: "Editing services for college projects and social media videos.",
+      description:
+        "Editing services for college projects and social media videos.",
       price: 700,
       category: "Editing",
       distance: 22,
@@ -136,134 +146,445 @@ const fetchRealServices = async () => {
     }
   ];
 
-  // Search + distance filtering
- const allServices = [
-  ...realServices,
-  ...dummyServices
-];
+  // Combine real + demo services
+  const allServices = [
+    ...realServices,
+    ...dummyServices
+  ];
 
-const filteredServices = allServices.filter((service) => {
-    // Search filter
+  // Search and distance filtering
+  const filteredServices = allServices.filter((service) => {
+
     const searchText = keyword.toLowerCase();
 
     const matchesSearch =
-      service.title.toLowerCase().includes(searchText) ||
-      service.description.toLowerCase().includes(searchText) ||
-      service.category.toLowerCase().includes(searchText);
+      service.title?.toLowerCase().includes(searchText) ||
+      service.description?.toLowerCase().includes(searchText) ||
+      service.category?.toLowerCase().includes(searchText);
 
-    // Distance filter
     const matchesDistance =
       distanceFilter === null ||
+      service.distance === undefined ||
       service.distance <= distanceFilter;
 
     return matchesSearch && matchesDistance;
+
   });
 
   return (
 
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-slate-50">
 
-      {/* Heading */}
-      <h1 className="text-4xl font-bold text-center text-blue-700 mb-3">
-        Student GigSphere
-      </h1>
+      {/* ================= HERO SECTION ================= */}
 
-      <p className="text-center text-gray-600 mb-8">
-        Find trusted student services near you
-      </p>
+<section className="bg-gradient-to-r from-slate-950 via-slate-900 to-teal-900 text-white">
+        <div className="max-w-7xl mx-auto px-6 py-20 text-center">
 
-      {/* Search */}
-      <div className="flex flex-wrap gap-3 justify-center mb-6">
+<p className="uppercase tracking-widest text-teal-300 font-semibold mb-4">            Student Gig Marketplace
+          </p>
 
-        <input
-          type="text"
-          placeholder="Search tutoring, coding, design..."
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          className="border border-gray-300 p-3 rounded-lg w-80"
-        />
+          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            Welcome to Student GigSphere
+          </h1>
 
-      </div>
+          <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-8">
+            Find trusted student services near you, connect with talented
+            students, and earn by sharing your skills.
+          </p>
 
-      {/* Distance Filters */}
-      <div className="flex flex-wrap justify-center gap-3 mb-8">
+          <div className="flex flex-wrap justify-center gap-4">
 
-        <button
-          onClick={() => setDistanceFilter(5)}
-          className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600"
-        >
-          Within 5 KM
-        </button>
+            <a
+              href="#services"
+              className="bg-white text-blue-700 px-7 py-3 rounded-xl font-semibold hover:bg-blue-50 transition"
+            >
+              Explore Services
+            </a>
 
-        <button
-          onClick={() => setDistanceFilter(10)}
-          className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600"
-        >
-          Within 10 KM
-        </button>
+            <a
+              href="#how-it-works"
+              className="border border-white px-7 py-3 rounded-xl font-semibold hover:bg-white hover:text-blue-700 transition"
+            >
+              How It Works
+            </a>
 
-        <button
-          onClick={() => setDistanceFilter(20)}
-          className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600"
-        >
-          Within 20 KM
-        </button>
+          </div>
 
-        <button
-          onClick={() => setDistanceFilter(null)}
-          className="bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600"
-        >
-          All Jobs
-        </button>
+        </div>
 
-      </div>
+      </section>
 
-      {/* Result count */}
-      <p className="text-center text-gray-600 mb-5">
 
-        Showing{" "}
-        <span className="font-bold">
-          {filteredServices.length}
-        </span>{" "}
-        services
+      {/* ================= TRUST FEATURES ================= */}
 
-      </p>
+      <section className="max-w-6xl mx-auto px-6 py-10">
 
-      {/* Services */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
 
-        {filteredServices.length === 0 ? (
+          <div className="bg-white rounded-2xl shadow-sm p-6 text-center border">
+            <div className="text-4xl mb-3">🎓</div>
 
-          <div className="col-span-full text-center">
+            <h3 className="text-xl font-bold text-slate-800">
+              Student Friendly
+            </h3>
 
-            <h2 className="text-xl font-semibold text-gray-600">
-              No services found
+            <p className="text-slate-500 mt-2">
+              Services designed around student needs and budgets.
+            </p>
+          </div>
+
+
+          <div className="bg-white rounded-2xl shadow-sm p-6 text-center border">
+            <div className="text-4xl mb-3">📍</div>
+
+            <h3 className="text-xl font-bold text-slate-800">
+              Hyperlocal
+            </h3>
+
+            <p className="text-slate-500 mt-2">
+              Discover useful services available around your location.
+            </p>
+          </div>
+
+
+          <div className="bg-white rounded-2xl shadow-sm p-6 text-center border">
+            <div className="text-4xl mb-3">💡</div>
+
+            <h3 className="text-xl font-bold text-slate-800">
+              Share Your Skills
+            </h3>
+
+            <p className="text-slate-500 mt-2">
+              Turn your skills into opportunities and earn as a student.
+            </p>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* ================= SERVICES ================= */}
+
+      <section
+        id="services"
+        className="max-w-7xl mx-auto px-6 py-12"
+      >
+
+        <div className="text-center mb-10">
+
+          <p className="text-blue-600 font-semibold uppercase tracking-wide">
+            Explore
+          </p>
+
+          <h2 className="text-4xl font-bold text-slate-800 mt-2">
+            Find Student Services
+          </h2>
+
+          <p className="text-slate-500 mt-3">
+            Search for tutoring, coding, design, editing and more.
+          </p>
+
+        </div>
+
+
+        {/* SEARCH */}
+
+        <div className="max-w-3xl mx-auto mb-6">
+
+          <input
+            type="text"
+            placeholder="🔍 Search tutoring, coding, design..."
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            className="w-full border border-slate-300 bg-white p-4 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+        </div>
+
+
+        {/* DISTANCE FILTER */}
+
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+
+          <button
+            onClick={() => setDistanceFilter(5)}
+            className={`px-5 py-2 rounded-xl font-medium transition ${
+              distanceFilter === 5
+                ? "bg-blue-700 text-white"
+                : "bg-white border text-slate-700 hover:bg-blue-50"
+            }`}
+          >
+            Within 5 KM
+          </button>
+
+
+          <button
+            onClick={() => setDistanceFilter(10)}
+            className={`px-5 py-2 rounded-xl font-medium transition ${
+              distanceFilter === 10
+                ? "bg-blue-700 text-white"
+                : "bg-white border text-slate-700 hover:bg-blue-50"
+            }`}
+          >
+            Within 10 KM
+          </button>
+
+
+          <button
+            onClick={() => setDistanceFilter(20)}
+            className={`px-5 py-2 rounded-xl font-medium transition ${
+              distanceFilter === 20
+                ? "bg-blue-700 text-white"
+                : "bg-white border text-slate-700 hover:bg-blue-50"
+            }`}
+          >
+            Within 20 KM
+          </button>
+
+
+          <button
+            onClick={() => setDistanceFilter(null)}
+            className={`px-5 py-2 rounded-xl font-medium transition ${
+              distanceFilter === null
+                ? "bg-slate-700 text-white"
+                : "bg-white border text-slate-700 hover:bg-slate-100"
+            }`}
+          >
+            All Services
+          </button>
+
+        </div>
+
+
+        {/* RESULT COUNT */}
+
+        <p className="text-center text-slate-500 mb-8">
+
+          Showing{" "}
+          <span className="font-bold text-blue-700">
+            {filteredServices.length}
+          </span>{" "}
+          services
+
+        </p>
+
+
+        {/* SERVICE CARDS */}
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
+
+          {filteredServices.length === 0 ? (
+
+            <div className="col-span-full text-center bg-white rounded-2xl p-12 shadow-sm">
+
+              <div className="text-5xl mb-4">
+                🔎
+              </div>
+
+              <h2 className="text-2xl font-bold text-slate-700">
+                No services found
+              </h2>
+
+              <p className="text-slate-500 mt-2">
+                Try another keyword or select a larger distance.
+              </p>
+
+            </div>
+
+          ) : (
+
+            filteredServices.map((service) => (
+
+              <ServiceCard
+                key={service._id}
+                service={service}
+              />
+
+            ))
+
+          )}
+
+        </div>
+
+      </section>
+
+
+      {/* ================= HOW IT WORKS ================= */}
+
+      <section
+        id="how-it-works"
+        className="bg-white border-y"
+      >
+
+        <div className="max-w-7xl mx-auto px-6 py-16">
+
+          <div className="text-center mb-12">
+
+            <p className="text-blue-600 font-semibold uppercase">
+              Simple Process
+            </p>
+
+            <h2 className="text-4xl font-bold text-slate-800 mt-2">
+              How It Works
             </h2>
 
-            <p className="text-gray-500 mt-2">
-              Try another keyword or increase the distance.
+            <p className="text-slate-500 mt-3">
+              Getting started with GigSphere is simple.
             </p>
 
           </div>
 
-        ) : (
 
-          filteredServices.map((service) => (
+          <div className="grid md:grid-cols-3 gap-8">
 
-            <ServiceCard
-              key={service._id}
-              service={service}
-            />
+            <div className="text-center">
 
-          ))
+              <div className="w-16 h-16 mx-auto bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-2xl font-bold">
+                1
+              </div>
 
-        )}
+              <h3 className="text-xl font-bold mt-5">
+                Find a Service
+              </h3>
 
-      </div>
+              <p className="text-slate-500 mt-2">
+                Search for a service based on your needs, category and
+                distance.
+              </p>
+
+            </div>
+
+
+            <div className="text-center">
+
+              <div className="w-16 h-16 mx-auto bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-2xl font-bold">
+                2
+              </div>
+
+              <h3 className="text-xl font-bold mt-5">
+                Connect
+              </h3>
+
+              <p className="text-slate-500 mt-2">
+                View the provider's service and send a booking request.
+              </p>
+
+            </div>
+
+
+            <div className="text-center">
+
+              <div className="w-16 h-16 mx-auto bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-2xl font-bold">
+                3
+              </div>
+
+              <h3 className="text-xl font-bold mt-5">
+                Get Your Work Done
+              </h3>
+
+              <p className="text-slate-500 mt-2">
+                Connect with the student provider and complete your task.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* ================= ABOUT ================= */}
+
+      <section className="bg-slate-900 text-white">
+
+        <div className="max-w-6xl mx-auto px-6 py-16">
+
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+
+            <div>
+
+              <p className="text-blue-400 font-semibold uppercase tracking-wide">
+                About GigSphere
+              </p>
+
+              <h2 className="text-4xl font-bold mt-3 mb-5">
+                Built for students, by students.
+              </h2>
+
+              <p className="text-slate-300 leading-relaxed">
+                Student GigSphere is a hyperlocal marketplace that helps
+                students discover affordable services and gives skilled
+                students an opportunity to earn.
+              </p>
+
+              <p className="text-slate-300 leading-relaxed mt-4">
+                Whether you need tutoring, coding assistance, design,
+                photography or editing, GigSphere brings useful student
+                services closer to you.
+              </p>
+
+            </div>
+
+
+            <div className="grid grid-cols-2 gap-4">
+
+              <div className="bg-slate-800 rounded-2xl p-6">
+                <div className="text-3xl">🎓</div>
+                <h3 className="font-bold mt-3">
+                  Student Community
+                </h3>
+              </div>
+
+
+              <div className="bg-slate-800 rounded-2xl p-6">
+                <div className="text-3xl">💰</div>
+                <h3 className="font-bold mt-3">
+                  Affordable
+                </h3>
+              </div>
+
+
+              <div className="bg-slate-800 rounded-2xl p-6">
+                <div className="text-3xl">📍</div>
+                <h3 className="font-bold mt-3">
+                  Local Services
+                </h3>
+              </div>
+
+
+              <div className="bg-slate-800 rounded-2xl p-6">
+                <div className="text-3xl">🚀</div>
+                <h3 className="font-bold mt-3">
+                  Student Opportunities
+                </h3>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* ================= FOOTER ================= */}
+
+      <footer className="bg-slate-950 text-slate-400 text-center py-6">
+
+        <p>
+          © 2026 Student GigSphere. Connecting students with opportunities.
+        </p>
+
+      </footer>
 
     </div>
 
   );
+
 }
 
 export default Home;

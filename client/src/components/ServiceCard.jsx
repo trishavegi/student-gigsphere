@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import { Link } from "react-router-dom";
-import { FaHeart } from "react-icons/fa";
 
 function ServiceCard({ service }) {
 
@@ -9,11 +8,13 @@ function ServiceCard({ service }) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-  if (!service.isDemo) {
-    fetchReviews();
-    checkFavorite();
-  }
-}, [service]);
+
+    if (!service.isDemo) {
+      fetchReviews();
+      checkFavorite();
+    }
+
+  }, [service]);
 
   const fetchReviews = async () => {
 
@@ -32,43 +33,61 @@ function ServiceCard({ service }) {
     }
 
   };
+
   const checkFavorite = async () => {
-
-  try {
-
-    const token = localStorage.getItem("token");
-
-    const response = await api.get("/favorites", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    const exists = response.data.find(
-      (fav) => fav.service._id === service._id
-    );
-
-    if (exists) {
-      setIsFavorite(true);
-    }
-
-  } catch (error) {
-
-    console.log(error);
-
-  }
-
-};
-
-  const handleBooking = async () => {
-     if (service.isDemo) {
-    alert("This is a demo service. Please choose a real service to book.");
-    return;
-  }
 
     try {
 
       const token = localStorage.getItem("token");
+
+      if (!token) return;
+
+      const response = await api.get(
+        "/favorites",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      const exists = response.data.find(
+        (fav) => fav.service?._id === service._id
+      );
+
+      setIsFavorite(!!exists);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
+  const handleBooking = async () => {
+
+    if (service.isDemo) {
+
+      alert(
+        "This is a demo service. Please choose a real service to book."
+      );
+
+      return;
+
+    }
+
+    try {
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+
+        alert("Please login to book a service.");
+
+        return;
+
+      }
 
       await api.post(
         "/bookings",
@@ -86,51 +105,66 @@ function ServiceCard({ service }) {
 
     } catch (error) {
 
-      alert(error.response?.data?.message);
+      alert(
+        error.response?.data?.message ||
+        "Booking failed"
+      );
 
     }
 
   };
 
-const handleFavorite = async () => {
-  if (service.isDemo) {
-    alert("Demo services cannot be added to favorites.");
-    return;
-  }
+  const handleFavorite = async () => {
 
-  try {
+    if (service.isDemo) {
 
-    const token = localStorage.getItem("token");
+      alert(
+        "Demo services cannot be added to favorites."
+      );
 
-    await api.post(
-      "/favorites",
-      {
-        serviceId: service._id
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+      return;
+
+    }
+
+    try {
+
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+
+        alert("Please login first.");
+
+        return;
+
       }
-    );
 
-    // Toggle the heart after success
-    setIsFavorite(!isFavorite);
-    alert(
-      isFavorite
-        ? "Removed from Favorites 💔"
-        : "Added to Favorites ❤️"
-    );
+      await api.post(
+        "/favorites",
+        {
+          serviceId: service._id
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-  } catch (error) {
+      setIsFavorite(!isFavorite);
 
-    console.log(error);
+    } catch (error) {
 
-    alert(error.response?.data?.message || "Failed to update favorite");
+      console.log(error);
 
-  }
+      alert(
+        error.response?.data?.message ||
+        "Failed to update favorite"
+      );
 
-};
+    }
+
+  };
+
   const averageRating =
     reviews.length > 0
       ? (
@@ -139,83 +173,189 @@ const handleFavorite = async () => {
             0
           ) / reviews.length
         ).toFixed(1)
-      : 0;
+      : "New";
+
+  const providerName =
+    service.user?.name || "Student Provider";
 
   return (
 
-    <div className="relative border p-5 rounded-xl shadow-lg m-4 bg-white">
-      <h2 className="text-xl font-bold">
-        {service.title}
-      </h2>
+    <div className="relative bg-white rounded-2xl border border-slate-200 shadow-md hover:shadow-xl transition duration-300 overflow-hidden">
 
-      <p className="mt-2">
-        {service.description}
-      </p>
+      {/* Demo label */}
 
-      <h3 className="text-green-600 mt-3">
-        ₹{service.price}
-      </h3>
+      {service.isDemo && (
 
-      <h4 className="mt-2">
-        ⭐ Average Rating : {averageRating}
-      </h4>
+        <div className="absolute top-3 left-3 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10">
+          DEMO
+        </div>
 
-      <hr className="my-3" />
+      )}
 
-      <h3 className="font-bold">
-        Reviews
-      </h3>
+      {/* Favorite */}
 
-      {
-        reviews.length === 0
-        ?
-        <p>No reviews yet</p>
-        :
-        reviews.map((review) => (
+      <button
+        onClick={handleFavorite}
+        className="absolute top-3 right-3 bg-white shadow-md w-10 h-10 rounded-full flex items-center justify-center text-xl hover:scale-110 transition z-10"
+        title={
+          service.isDemo
+            ? "Demo service"
+            : "Add to favorites"
+        }
+      >
+        {isFavorite ? "❤️" : "🤍"}
+      </button>
 
-          <div key={review._id}>
 
-            <p>
-              {"⭐".repeat(review.rating)}
-            </p>
+      <div className="p-6">
 
-            <p>
-              {review.comment}
-            </p>
+        {/* Provider */}
 
-            <hr />
+        <div className="flex items-center gap-3 mb-5">
+
+          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-teal-500 text-white flex items-center justify-center text-lg font-bold">
+
+            {providerName.charAt(0).toUpperCase()}
 
           </div>
 
-        ))
-      }
+          <div>
 
-      <div className="flex gap-3 mt-3">
+            <p className="text-xs text-slate-500">
+              Provided by
+            </p>
 
-  <Link to={`/service/${service._id}`}>
-    <button className="bg-green-600 text-white px-4 py-2 rounded">
-      View Details
-    </button>
-  </Link>
+            <p className="font-semibold text-slate-800">
+              {providerName}
+            </p>
 
-  <button
-    onClick={handleBooking}
-    className="bg-blue-500 text-white px-4 py-2 rounded"
-  >
-    Book Service
-  </button>
-  <button
-  onClick={handleFavorite}
-  className="absolute top-4 right-4 text-2xl"
->
-  {isFavorite ? "❤️" : "🤍"}
-</button>
+          </div>
 
-</div>
+        </div>
+
+
+        {/* Category */}
+
+        {service.category && (
+
+          <span className="inline-block bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full mb-3">
+
+            {service.category}
+
+          </span>
+
+        )}
+
+
+        {/* Title */}
+
+        <h2 className="text-2xl font-bold text-slate-800">
+
+          {service.title}
+
+        </h2>
+
+
+        {/* Description */}
+
+        <p className="text-slate-500 mt-3 leading-relaxed">
+
+          {service.description}
+
+        </p>
+
+
+        {/* Price */}
+
+        <div className="mt-5">
+
+          <span className="text-2xl font-bold text-teal-600">
+
+            ₹{service.price}
+
+          </span>
+
+          <span className="text-sm text-slate-400 ml-2">
+            starting price
+          </span>
+
+        </div>
+
+
+        {/* Rating */}
+
+        <div className="mt-4 bg-yellow-50 rounded-xl px-4 py-3 flex items-center justify-between">
+
+          <div>
+
+            <span className="text-yellow-500 text-xl">
+              ⭐⭐⭐⭐⭐
+            </span>
+
+          </div>
+
+          <div className="font-bold text-slate-700">
+
+            {averageRating}
+
+          </div>
+
+        </div>
+
+
+        {/* Reviews */}
+
+        {!service.isDemo && (
+
+          <div className="mt-4">
+
+            <p className="font-semibold text-slate-700">
+              {reviews.length}{" "}
+              {reviews.length === 1
+                ? "Review"
+                : "Reviews"}
+            </p>
+
+          </div>
+
+        )}
+
+
+        {/* Buttons */}
+
+        <div className="flex gap-3 mt-6">
+
+          <Link
+            to={`/service/${service._id}`}
+            className="flex-1"
+          >
+
+            <button className="w-full bg-slate-100 text-slate-700 px-4 py-3 rounded-xl font-semibold hover:bg-slate-200 transition">
+
+              View Details
+
+            </button>
+
+          </Link>
+
+
+          <button
+            onClick={handleBooking}
+            className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
+          >
+
+            Book Now
+
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
 
   );
+
 }
 
 export default ServiceCard;

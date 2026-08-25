@@ -113,11 +113,26 @@ function Navbar() {
           >
             Home
           </Link>
+          
+
 
 
           {/* BEFORE LOGIN */}
           {!user && (
             <>
+             <Link
+      to="/about"
+      className="hover:text-gray-200"
+    >
+      About
+    </Link>
+
+    <Link
+      to="/contact"
+      className="hover:text-gray-200"
+    >
+      Contact
+    </Link>
               <Link
                 to="/login"
                 className="hover:text-gray-200"
@@ -131,6 +146,7 @@ function Navbar() {
               >
                 Register
               </Link>
+              
             </>
           )}
 
