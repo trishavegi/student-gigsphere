@@ -1,261 +1,250 @@
-import { useEffect, useState } from "react";
-import { getDistance } from "geolib";
+import { useEffect,useState } from "react";
 import api from "../services/api";
 import ServiceCard from "../components/ServiceCard";
-const demoServices = [
-  {
-    _id: "demo1",
-    title: "Math Tutoring",
-    description:
-      "Personalized mathematics tutoring for school and college students.",
-    price: 300,
-    category: "Tutoring",
-    user: {
-      _id: "demo-user-1",
-      name: "Rahul"
-    },
-    isDemo: true
-  },
-  {
-    _id: "demo2",
-    title: "Logo Design",
-    description:
-      "Creative and professional logo designs for students and small businesses.",
-    price: 500,
-    category: "Design",
-    user: {
-      _id: "demo-user-2",
-      name: "Sneha"
-    },
-    isDemo: true
-  },
-  {
-    _id: "demo3",
-    title: "Python Programming Help",
-    description:
-      "Get help with Python assignments, coding problems and projects.",
-    price: 400,
-    category: "Coding",
-    user: {
-      _id: "demo-user-3",
-      name: "Arjun"
-    },
-    isDemo: true
-  },
-  {
-    _id: "demo4",
-    title: "College Event Photography",
-    description:
-      "Affordable photography services for college events and functions.",
-    price: 800,
-    category: "Photography",
-    user: {
-      _id: "demo-user-4",
-      name: "Priya"
-    },
-    isDemo: true
-  },
-  {
-    _id: "demo5",
-    title: "Assignment Typing",
-    description:
-      "Fast and neat typing services for college assignments and documents.",
-    price: 200,
-    category: "Academic",
-    user: {
-      _id: "demo-user-5",
-      name: "Kiran"
-    },
-    isDemo: true
-  },
-  {
-    _id: "demo6",
-    title: "Video Editing",
-    description:
-      "Professional video editing for college projects and social media.",
-    price: 600,
-    category: "Editing",
-    user: {
-      _id: "demo-user-6",
-      name: "Anjali"
-    },
-    isDemo: true
-  }
-];
+
 function Home() {
 
-  const [services, setServices] = useState([]);
   const [keyword, setKeyword] = useState("");
-  const [userLocation, setUserLocation] = useState(null);
   const [distanceFilter, setDistanceFilter] = useState(null);
-
+  const [realServices, setRealServices] = useState([]);
   useEffect(() => {
-    fetchServices();
-  }, []);
+  fetchRealServices();
+}, []);
 
-  const fetchServices = async () => {
-    try {
+const fetchRealServices = async () => {
 
-      const response = await api.get("/services");
-      if (response.data.length === 0) {
-  setServices(demoServices);
-} else {
-  setServices(response.data);
-}
+  try {
 
-    } catch (error) {
+    const response = await api.get("/services");
 
-      console.log(error);
+    console.log("REAL SERVICES:", response.data);
 
+    setRealServices(response.data);
+
+  } catch (error) {
+
+    console.log("Failed to load real services:", error);
+
+  }
+
+};
+
+  // Dummy services for demonstration
+  const dummyServices = [
+    {
+      _id: "demo1",
+      title: "Math Tutoring",
+      description: "I can help school and college students with Mathematics.",
+      price: 300,
+      category: "Tutoring",
+      distance: 2,
+      user: {
+        _id: "user1",
+        name: "Rahul"
+      }
+    },
+
+    {
+      _id: "demo2",
+      title: "Logo Design",
+      description: "I will create a simple and professional logo for your project.",
+      price: 500,
+      category: "Design",
+      distance: 4,
+      user: {
+        _id: "user2",
+        name: "Anjali"
+      }
+    },
+
+    {
+      _id: "demo3",
+      title: "Python Programming Help",
+      description: "Get help with Python programming and college assignments.",
+      price: 400,
+      category: "Coding",
+      distance: 7,
+      user: {
+        _id: "user3",
+        name: "Kiran"
+      }
+    },
+
+    {
+      _id: "demo4",
+      title: "Notes Preparation",
+      description: "Well-organized notes for college subjects and exams.",
+      price: 200,
+      category: "Notes",
+      distance: 9,
+      user: {
+        _id: "user4",
+        name: "Sneha"
+      }
+    },
+
+    {
+      _id: "demo5",
+      title: "Photography Service",
+      description: "Affordable photography for college events and projects.",
+      price: 800,
+      category: "Photography",
+      distance: 12,
+      user: {
+        _id: "user5",
+        name: "Arjun"
+      }
+    },
+
+    {
+      _id: "demo6",
+      title: "Web Development",
+      description: "I can help build simple websites using React.",
+      price: 1000,
+      category: "Coding",
+      distance: 15,
+      user: {
+        _id: "user6",
+        name: "Priya"
+      }
+    },
+
+    {
+      _id: "demo7",
+      title: "English Speaking Practice",
+      description: "Practice English conversation and improve your confidence.",
+      price: 250,
+      category: "Tutoring",
+      distance: 18,
+      user: {
+        _id: "user7",
+        name: "Vikram"
+      }
+    },
+
+    {
+      _id: "demo8",
+      title: "Video Editing",
+      description: "Editing services for college projects and social media videos.",
+      price: 700,
+      category: "Editing",
+      distance: 22,
+      user: {
+        _id: "user8",
+        name: "Meena"
+      }
     }
-  };
+  ];
 
-  const searchServices = async () => {
-    try {
+  // Search + distance filtering
+ const allServices = [
+  ...realServices,
+  ...dummyServices
+];
 
-      if (keyword.trim() === "") {
-        fetchServices();
-        return;
-      }
+const filteredServices = allServices.filter((service) => {
+    // Search filter
+    const searchText = keyword.toLowerCase();
 
-      const response = await api.get(
-        `/services/search?keyword=${keyword}`
-      );
+    const matchesSearch =
+      service.title.toLowerCase().includes(searchText) ||
+      service.description.toLowerCase().includes(searchText) ||
+      service.category.toLowerCase().includes(searchText);
 
-      setServices(response.data);
+    // Distance filter
+    const matchesDistance =
+      distanceFilter === null ||
+      service.distance <= distanceFilter;
 
-    } catch (error) {
-
-      console.log(error);
-
-    }
-  };
-
-  const getCurrentLocation = () => {
-
-    navigator.geolocation.getCurrentPosition(
-
-      (position) => {
-
-        setUserLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        });
-
-        alert("Location Found!");
-
-      },
-
-      (error) => {
-
-        alert("Please allow location access.");
-        console.log(error);
-
-      }
-
-    );
-
-  };
-
-  const filteredServices = services.filter((service) => {
-
-    if (!distanceFilter || !userLocation)
-      return true;
-
-    if (!service.latitude || !service.longitude)
-      return false;
-
-    const distance = getDistance(
-
-      {
-        latitude: userLocation.latitude,
-        longitude: userLocation.longitude
-      },
-
-      {
-        latitude: service.latitude,
-        longitude: service.longitude
-      }
-
-    );
-
-    return distance <= distanceFilter * 1000;
-
+    return matchesSearch && matchesDistance;
   });
 
   return (
 
     <div className="min-h-screen bg-gray-100 p-8">
 
-      <h1 className="text-4xl font-bold text-center text-blue-700 mb-8">
+      {/* Heading */}
+      <h1 className="text-4xl font-bold text-center text-blue-700 mb-3">
         Student GigSphere
       </h1>
 
-      <div className="flex flex-wrap gap-3 justify-center mb-8">
+      <p className="text-center text-gray-600 mb-8">
+        Find trusted student services near you
+      </p>
+
+      {/* Search */}
+      <div className="flex flex-wrap gap-3 justify-center mb-6">
 
         <input
           type="text"
-          placeholder="Search Service..."
+          placeholder="Search tutoring, coding, design..."
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          className="border p-3 rounded-lg w-80"
+          className="border border-gray-300 p-3 rounded-lg w-80"
         />
-
-        <button
-          onClick={searchServices}
-          className="bg-blue-600 text-white px-5 py-3 rounded-lg"
-        >
-          Search
-        </button>
-
-        <button
-          onClick={getCurrentLocation}
-          className="bg-green-600 text-white px-5 py-3 rounded-lg"
-        >
-          Nearby Jobs
-        </button>
 
       </div>
 
+      {/* Distance Filters */}
       <div className="flex flex-wrap justify-center gap-3 mb-8">
 
         <button
           onClick={() => setDistanceFilter(5)}
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600"
         >
-          5 KM
+          Within 5 KM
         </button>
 
         <button
           onClick={() => setDistanceFilter(10)}
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600"
         >
-          10 KM
+          Within 10 KM
         </button>
 
         <button
           onClick={() => setDistanceFilter(20)}
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600"
         >
-          20 KM
+          Within 20 KM
         </button>
 
         <button
           onClick={() => setDistanceFilter(null)}
-          className="bg-gray-500 text-white px-4 py-2 rounded"
+          className="bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600"
         >
           All Jobs
         </button>
 
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      {/* Result count */}
+      <p className="text-center text-gray-600 mb-5">
+
+        Showing{" "}
+        <span className="font-bold">
+          {filteredServices.length}
+        </span>{" "}
+        services
+
+      </p>
+
+      {/* Services */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         {filteredServices.length === 0 ? (
 
-          <h2 className="text-center col-span-3 text-xl font-semibold">
-            No Services Found
-          </h2>
+          <div className="col-span-full text-center">
+
+            <h2 className="text-xl font-semibold text-gray-600">
+              No services found
+            </h2>
+
+            <p className="text-gray-500 mt-2">
+              Try another keyword or increase the distance.
+            </p>
+
+          </div>
 
         ) : (
 
@@ -271,103 +260,10 @@ function Home() {
         )}
 
       </div>
-      {/* HOW IT WORKS */}
-
-<section className="mt-16">
-
-  <div className="text-center mb-10">
-
-    <h2 className="text-3xl font-bold text-gray-800">
-      How Student GigSphere Works
-    </h2>
-
-    <p className="text-gray-500 mt-3">
-      Find the right student service in just a few simple steps.
-    </p>
-
-  </div>
-
-  <div className="grid md:grid-cols-3 gap-8">
-
-    {/* STEP 1 */}
-
-    <div className="bg-white rounded-2xl shadow-md p-8 text-center">
-
-      <div className="text-4xl mb-4">
-        📝
-      </div>
-
-      <div className="text-blue-600 font-bold text-lg mb-2">
-        Step 1
-      </div>
-
-      <h3 className="text-xl font-bold mb-3">
-        Post or Find a Gig
-      </h3>
-
-      <p className="text-gray-600">
-        Post your task or search for services offered by students
-        around you.
-      </p>
-
-    </div>
-
-
-    {/* STEP 2 */}
-
-    <div className="bg-white rounded-2xl shadow-md p-8 text-center">
-
-      <div className="text-4xl mb-4">
-        💬
-      </div>
-
-      <div className="text-blue-600 font-bold text-lg mb-2">
-        Step 2
-      </div>
-
-      <h3 className="text-xl font-bold mb-3">
-        Get Offers & Connect
-      </h3>
-
-      <p className="text-gray-600">
-        Connect with suitable students, compare offers and
-        discuss the work through chat.
-      </p>
-
-    </div>
-
-
-    {/* STEP 3 */}
-
-    <div className="bg-white rounded-2xl shadow-md p-8 text-center">
-
-      <div className="text-4xl mb-4">
-        ✅
-      </div>
-
-      <div className="text-blue-600 font-bold text-lg mb-2">
-        Step 3
-      </div>
-
-      <h3 className="text-xl font-bold mb-3">
-        Choose & Complete
-      </h3>
-
-      <p className="text-gray-600">
-        Choose the right provider, complete your task and
-        leave a review.
-      </p>
-
-    </div>
-
-  </div>
-
-</section>
 
     </div>
 
   );
-
 }
 
 export default Home;

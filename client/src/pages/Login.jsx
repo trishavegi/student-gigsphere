@@ -35,6 +35,7 @@ function Login() {
   "user",
   JSON.stringify(response.data.user)
 );
+window.dispatchEvent(new Event("userChanged"));
       
 
       alert(response.data.message);
