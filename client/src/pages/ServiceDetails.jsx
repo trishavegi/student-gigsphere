@@ -81,22 +81,56 @@ const submitComplaint = async () => {
 
   }
 };
+const handleBooking = async () => {
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login to book a service.");
+    return;
+  }
+
+  try {
+
+    await api.post(
+      "/bookings",
+      {
+        serviceId: service._id
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    alert("Booking Request Sent Successfully!");
+
+  } catch (error) {
+
+    alert(
+      error.response?.data?.message ||
+      "Booking failed"
+    );
+
+  }
+
+};
 
   return (
 
-    <div className="max-w-3xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8">
-
-      <h1 className="text-4xl font-bold text-blue-700 mb-5">
+    <div className="max-w-4xl mx-auto my-10 bg-white border border-slate-200 shadow-xl rounded-2xl p-6 md:p-8">
+      <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-5">
         {service.title}
       </h1>
 
-      <p className="text-gray-700 mb-4">
+      <p className="text-slate-600 text-lg leading-relaxed mb-6">
         {service.description}
       </p>
 
       <hr className="my-4"/>
 
-      <div className="space-y-3">
+      <div className="space-y-4 text-slate-700">
 
         <p>
           <b>Category :</b> {service.category}
@@ -122,7 +156,7 @@ const submitComplaint = async () => {
 )}
 <button
   onClick={openDirections}
-  className="bg-green-600 text-white px-4 py-2 rounded mt-3 hover:bg-green-700"
+  className="mt-4 bg-teal-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-teal-700 transition shadow-sm"
 >
   🧭 Get Directions
 </button>
@@ -140,23 +174,24 @@ const submitComplaint = async () => {
         </p>
        {providerId && (
   <button
-    onClick={() => navigate(`/chat/${providerId}`)}
-    className="mt-4 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
-  >
-    💬 Chat with Provider
-  </button>
-)}
+  onClick={() => navigate(`/chat/${providerId}`)}
+  className="mt-4 bg-slate-800 text-white px-6 py-3 rounded-xl font-semibold hover:bg-slate-900 transition shadow-sm"
+>
+  💬 Chat with Provider
+</button>
+       )}
 
       </div>
 
-      <button
-        className="mt-8 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
-      >
-        Book Service
-      </button>
+     <button
+     onClick={handleBooking}
+  className="mt-8 w-full bg-teal-600 text-white py-3 rounded-xl font-semibold hover:bg-teal-700 transition shadow-sm"
+>
+  📅 Book Service
+</button>
       <div className="mt-8">
 
-  <h2 className="text-xl font-bold mb-3 text-red-600">
+  <h2 className="text-xl font-bold mb-3 text-slate-800">
     Report this Service
   </h2>
 
@@ -164,13 +199,12 @@ const submitComplaint = async () => {
     value={reason}
     onChange={(e) => setReason(e.target.value)}
     placeholder="Write your complaint..."
-    className="w-full border rounded-lg p-3"
+    className="w-full border border-slate-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-red-400"
   />
 
   <button
     onClick={submitComplaint}
-    className="mt-3 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700"
-  >
+    className="mt-3 bg-red-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-red-600 transition">
     Report Service
   </button>
 

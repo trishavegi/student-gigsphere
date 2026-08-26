@@ -51,9 +51,9 @@ function ProviderProfile() {
     <div className="flex items-center gap-6">
 
       <img
-        src={"https://ui-avatars.com/api/?name=${provider.name}"}
+        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(provider.name)}&background=0f766e&color=fff`}
         alt="profile"
-        className="w-28 h-28 rounded-full border-4 border-blue-500"
+        className="w-28 h-28 rounded-full border-4 border-teal-500"
       />
 
       <div>
@@ -91,14 +91,14 @@ function ProviderProfile() {
 
         <div
           key={service._id}
-          className="bg-gray-100 rounded-xl p-5 shadow hover:shadow-lg transition"
+          className="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:shadow-md transition"
         >
 
           <h3 className="text-xl font-bold">
             {service.title}
           </h3>
 
-          <p className="mt-2">
+          <p className="text-xl font-bold text-teal-600 mt-2">
             ₹ {service.price}
           </p>
 
@@ -115,11 +115,11 @@ function ProviderProfile() {
 
     <div className="flex gap-5 mt-10">
 
-      <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+      <button className="bg-slate-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-slate-800 transition">
         💬 Chat
       </button>
 
-      <button className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700">
+      <button className="bg-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-teal-700 transition">
         Hire Again
       </button>
 

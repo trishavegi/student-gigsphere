@@ -341,7 +341,7 @@ function ServiceCard({ service }) {
 
           <button
             onClick={handleBooking}
-            className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
+            className="flex-1 bg-teal-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-teal-700 transition shadow-sm"
           >
 
             Book Now

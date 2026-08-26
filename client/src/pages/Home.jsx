@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import ServiceCard from "../components/ServiceCard";
+import { Link } from "react-router-dom";
 
 function Home() {
 
@@ -147,10 +148,13 @@ function Home() {
   ];
 
   // Combine real + demo services
-  const allServices = [
-    ...realServices,
-    ...dummyServices
-  ];
+  const allServices =
+  realServices.length > 0
+    ? realServices
+    : dummyServices.map((service) => ({
+        ...service,
+        isDemo: true
+      }));
 
   // Search and distance filtering
   const filteredServices = allServices.filter((service) => {
@@ -196,14 +200,14 @@ function Home() {
 
             <a
               href="#services"
-              className="bg-white text-blue-700 px-7 py-3 rounded-xl font-semibold hover:bg-blue-50 transition"
+              className="bg-teal-500 text-white px-7 py-3 rounded-xl font-semibold hover:bg-teal-600 transition shadow-lg"
             >
               Explore Services
             </a>
 
             <a
               href="#how-it-works"
-              className="border border-white px-7 py-3 rounded-xl font-semibold hover:bg-white hover:text-blue-700 transition"
+              className="bg-teal-500 text-white px-7 py-3 rounded-xl font-semibold hover:bg-teal-600 transition shadow-lg"
             >
               How It Works
             </a>
@@ -297,7 +301,7 @@ function Home() {
             placeholder="🔍 Search tutoring, coding, design..."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            className="w-full border border-slate-300 bg-white p-4 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-slate-300 bg-white p-4 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
 
         </div>
@@ -311,8 +315,8 @@ function Home() {
             onClick={() => setDistanceFilter(5)}
             className={`px-5 py-2 rounded-xl font-medium transition ${
               distanceFilter === 5
-                ? "bg-blue-700 text-white"
-                : "bg-white border text-slate-700 hover:bg-blue-50"
+                ? "bg-teal-600 text-white"
+                : "bg-white border text-slate-700 hover:bg-teal-50"
             }`}
           >
             Within 5 KM

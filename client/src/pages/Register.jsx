@@ -25,88 +25,143 @@ function Register() {
       setPassword("");
       setRole("customer");
     } catch (error) {
-      alert(error.response?.data?.message || "Registration Failed");
+      alert(
+        error.response?.data?.message ||
+        "Registration Failed"
+      );
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-600 to-purple-700 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 flex items-center justify-center px-4 py-10">
 
-      <div className="bg-white rounded-2xl shadow-2xl p-10 w-[420px]">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-10 w-full max-w-md">
 
-        <h1 className="text-3xl font-bold text-center text-blue-700 mb-2">
-          Create Account
-        </h1>
+        {/* Heading */}
 
-        <p className="text-center text-gray-500 mb-6">
-          Join GigSphere
-        </p>
+        <div className="text-center mb-7">
+
+          <p className="text-teal-600 font-semibold uppercase tracking-wider text-sm">
+            Student GigSphere
+          </p>
+
+          <h1 className="text-3xl font-bold text-slate-800 mt-2">
+            Create Account
+          </h1>
+
+          <p className="text-slate-500 mt-2">
+            Join the student community
+          </p>
+
+        </div>
+
 
         <form onSubmit={handleSubmit}>
 
-          <input
-            className="w-full border rounded-lg p-3 mb-4"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e)=>setName(e.target.value)}
-          />
+          {/* Name */}
+
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Full Name
+          </label>
 
           <input
-            className="w-full border rounded-lg p-3 mb-4"
-            placeholder="Email"
+            className="w-full border border-slate-300 rounded-xl p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            placeholder="Enter your full name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+
+
+          {/* Email */}
+
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Email
+          </label>
+
+          <input
+            className="w-full border border-slate-300 rounded-xl p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            placeholder="Enter your email"
             type="email"
             value={email}
-            onChange={(e)=>setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
+
+
+          {/* Password */}
+
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Password
+          </label>
 
           <input
-            className="w-full border rounded-lg p-3 mb-4"
-            placeholder="Password"
+            className="w-full border border-slate-300 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            placeholder="Create a password"
             type="password"
             value={password}
-            onChange={(e)=>setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
 
-          <h3 className="font-semibold mb-3">
+
+          {/* Role */}
+
+          <h3 className="font-semibold text-slate-700 mb-3">
             Select Role
           </h3>
 
           <div className="grid grid-cols-2 gap-3 mb-6">
 
+            {/* Student */}
+
             <button
               type="button"
-              onClick={()=>setRole("customer")}
-              className={`p-4 rounded-xl border ${
-                role==="customer"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white"
+              onClick={() => setRole("customer")}
+              className={`p-4 rounded-xl border font-semibold transition ${
+                role === "customer"
+                  ? "bg-teal-600 text-white border-teal-600 shadow-md"
+                  : "bg-white text-slate-700 border-slate-300 hover:border-teal-400 hover:bg-teal-50"
               }`}
             >
-              🎓
+              <span className="text-2xl">
+                🎓
+              </span>
+
               <br />
+
               Student
             </button>
 
+
+            {/* Provider */}
+
             <button
               type="button"
-              onClick={()=>setRole("provider")}
-              className={`p-4 rounded-xl border ${
-                role==="provider"
-                  ? "bg-green-600 text-white"
-                  : "bg-white"
+              onClick={() => setRole("provider")}
+              className={`p-4 rounded-xl border font-semibold transition ${
+                role === "provider"
+                  ? "bg-teal-600 text-white border-teal-600 shadow-md"
+                  : "bg-white text-slate-700 border-slate-300 hover:border-teal-400 hover:bg-teal-50"
               }`}
             >
-              💼
+              <span className="text-2xl">
+                💼
+              </span>
+
               <br />
+
               Provider
             </button>
 
-            
-
           </div>
 
+
+          {/* Register */}
+
           <button
-            className="w-full bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700"
+            type="submit"
+            className="w-full bg-teal-600 text-white p-3 rounded-xl font-semibold hover:bg-teal-700 transition shadow-sm"
           >
             Create Account
           </button>

@@ -146,7 +146,7 @@ function ProviderDashboard() {
 
       {/* HEADER */}
 
-      <div className="bg-gradient-to-r from-slate-900 to-blue-900 text-white">
+      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-teal-900 text-white">
 
         <div className="max-w-7xl mx-auto px-6 py-10">
 
@@ -320,7 +320,7 @@ function ProviderDashboard() {
 
                   <button
                     onClick={() => handleEdit(service)}
-                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                    className="flex-1 bg-slate-800 text-white px-4 py-2 rounded-xl font-semibold hover:bg-slate-900 transition"
                   >
                     Edit
                   </button>

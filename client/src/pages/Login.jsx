@@ -69,16 +69,29 @@ window.dispatchEvent(new Event("userChanged"));
 
   return (
 
-    <div className="max-w-md mx-auto mt-10 border p-6 rounded shadow">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 flex items-center justify-center px-6 py-12">
+  <div className="w-full max-w-md bg-white border border-slate-200 p-8 md:p-10 rounded-2xl shadow-2xl">
 
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        Login
-      </h1>
+      <div className="text-center mb-8">
+
+  <p className="text-teal-600 font-semibold uppercase tracking-wider text-sm">
+    Student GigSphere
+  </p>
+
+  <h1 className="text-3xl font-bold text-slate-800 mt-2">
+    Welcome Back
+  </h1>
+
+  <p className="text-slate-500 mt-2">
+    Login to continue to your account
+  </p>
+
+</div>
 
       <form onSubmit={handleSubmit}>
 
         <input
-          className="border w-full p-2 mb-4 rounded"
+          className="border border-slate-300 w-full p-3 mb-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
           type="email"
           placeholder="Enter Email"
           value={email}
@@ -88,7 +101,7 @@ window.dispatchEvent(new Event("userChanged"));
         />
 
         <input
-          className="border w-full p-2 mb-4 rounded"
+          className="border border-slate-300 w-full p-3 mb-5 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
           type="password"
           placeholder="Enter Password"
           value={password}
@@ -99,13 +112,27 @@ window.dispatchEvent(new Event("userChanged"));
 
         <button
           type="submit"
-          className="bg-blue-600 text-white w-full p-2 rounded hover:bg-blue-700"
+          className="bg-teal-600 text-white w-full py-3 rounded-xl font-semibold hover:bg-teal-700 transition shadow-sm"
         >
           Login
         </button>
 
       </form>
+      <p className="text-center text-slate-500 mt-6">
 
+  Don't have an account?{" "}
+
+  <button
+    type="button"
+    onClick={() => navigate("/register")}
+    className="text-teal-600 font-semibold hover:text-teal-700"
+  >
+    Register
+  </button>
+
+</p>
+
+    </div>
     </div>
 
   );

@@ -91,7 +91,7 @@ function Navbar() {
 
   return (
 
-    <nav className="bg-blue-600 text-white px-6 py-4 shadow-lg">
+   <nav className="bg-slate-950 text-white px-6 py-4 shadow-lg">
 
       <div className="flex justify-between items-center">
 
@@ -142,7 +142,7 @@ function Navbar() {
 
               <Link
                 to="/register"
-                className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold"
+                className="bg-teal-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-600 transition"
               >
                 Register
               </Link>
@@ -239,7 +239,7 @@ function Navbar() {
               {/* Logout */}
               <button
                 onClick={handleLogout}
-                className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600"
+                className="bg-red-500 px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition"
               >
                 Logout
               </button>

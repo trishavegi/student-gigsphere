@@ -54,58 +54,60 @@ try {
 
 return (
 
-<div className="min-h-screen bg-gray-100 flex justify-center items-center">
+<div className="min-h-screen bg-slate-50 flex justify-center px-4 py-10">
+<div className="bg-white border border-slate-200 shadow-xl rounded-2xl p-6 md:p-8 w-full max-w-2xl">
+    <h1 className="text-3xl font-bold text-slate-900 mb-2">
+  Create Service
+</h1>
 
-  <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-2xl">
-
-    <h1 className="text-3xl font-bold text-center mb-6">
-      Create Service
-    </h1>
+<p className="text-slate-500 mb-6">
+  Post a service and connect with students who need your skills.
+</p>
 
     <input
-      className="w-full border p-3 rounded mb-4"
+      className="w-full border border-slate-300 p-3 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
       placeholder="Service Title"
       value={title}
       onChange={(e)=>setTitle(e.target.value)}
     />
 
     <textarea
-      className="w-full border p-3 rounded mb-4"
+     className="w-full border border-slate-300 p-3 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
       placeholder="Description"
       value={description}
       onChange={(e)=>setDescription(e.target.value)}
     />
 
     <input
-      className="w-full border p-3 rounded mb-4"
+      className="w-full border border-slate-300 p-3 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
       placeholder="Price"
       value={price}
       onChange={(e)=>setPrice(e.target.value)}
     />
 
     <input
-      className="w-full border p-3 rounded mb-4"
+      className="w-full border border-slate-300 p-3 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
       placeholder="Category"
       value={category}
       onChange={(e)=>setCategory(e.target.value)}
     />
 
     <input
-      className="w-full border p-3 rounded mb-4"
+      className="w-full border border-slate-300 p-3 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
       placeholder="Location"
       value={location}
       onChange={(e)=>setLocation(e.target.value)}
     />
 
     <input
-      className="w-full border p-3 rounded mb-4"
+      className="w-full border border-slate-300 p-3 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
       placeholder="Skills Required"
       value={skills}
       onChange={(e)=>setSkills(e.target.value)}
     />
 
     <input
-      className="w-full border p-3 rounded mb-4"
+      className="w-full border border-slate-300 p-3 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
       placeholder="Duration"
       value={duration}
       onChange={(e)=>setDuration(e.target.value)}
@@ -113,8 +115,7 @@ return (
 
     <button
       onClick={handleSubmit}
-      className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700"
-    >
+      className="w-full bg-teal-600 text-white py-3 rounded-xl font-semibold hover:bg-teal-700 transition shadow-sm">
       Post Service
     </button>
 

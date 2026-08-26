@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import { Link } from "react-router-dom";
 
 function CustomerDashboard() {
 
@@ -123,7 +124,7 @@ const cancelBooking = async (bookingId) => {
 
     {/* Header */}
 
-    <section className="bg-gradient-to-r from-slate-900 via-blue-900 to-teal-800 text-white">
+    <section className="bg-gradient-to-r from-slate-950 via-slate-900 to-teal-900 text-white">
 
       <div className="max-w-7xl mx-auto px-6 py-12">
 
@@ -147,6 +148,26 @@ const cancelBooking = async (bookingId) => {
     {/* Dashboard content */}
 
     <div className="max-w-7xl mx-auto px-6 py-10">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+
+  <div>
+    <h2 className="text-2xl font-bold text-slate-800">
+      Welcome back! 👋
+    </h2>
+
+    <p className="text-slate-500 mt-1">
+      Find services, manage your bookings and save your favorites.
+    </p>
+  </div>
+
+  <Link
+    to="/"
+    className="inline-block bg-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-teal-700 transition text-center"
+  >
+    🔎 Browse Services
+  </Link>
+
+</div>
 
 
       {/* Statistics */}

@@ -356,150 +356,142 @@ socket.emit(
 };
 
 return (
+  <div className="min-h-screen bg-slate-50 flex justify-center items-center px-4 py-6">
 
+    <div className="w-full max-w-2xl h-[650px] bg-white
+      rounded-3xl shadow-xl border border-slate-200
+      flex flex-col overflow-hidden">
 
-<div className="h-screen bg-gray-100 flex justify-center items-center">
+      {/* HEADER */}
+      <div className="bg-gradient-to-r from-slate-900 to-teal-800
+        text-white p-5">
 
-  <div className="w-full max-w-md h-[600px] bg-white rounded-lg shadow-lg flex flex-col">
+        <h1 className="text-xl font-bold">
+          💬 Chat
+        </h1>
 
+        <p className="text-sm text-slate-300 mt-1">
+          {onlineUsers.includes(receiverId)
+            ? "🟢 Online"
+            : "⚫ Offline"}
+        </p>
 
-    {/* HEADER */}
+      </div>
 
-    <div className="bg-green-600 text-white p-4 rounded-t-lg">
+      {/* MESSAGES */}
+      <div className="flex-1 overflow-y-auto p-5 bg-slate-50">
 
-      <h1 className="text-xl font-bold">
-        Chat
-      </h1>
+        {messages.length === 0 ? (
 
-      <p className="text-sm">
+          <div className="text-center text-slate-500 mt-20">
 
-        {onlineUsers.includes(receiverId)
-          ? "🟢 Online"
-          : "⚫ Offline"}
+            <div className="text-5xl mb-4">
+              💬
+            </div>
 
-      </p>
+            <p className="font-semibold">
+              No messages yet
+            </p>
 
-    </div>
+            <p className="text-sm mt-2">
+              Start the conversation.
+            </p>
 
+          </div>
 
-    {/* MESSAGES */}
+        ) : (
 
-    <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
+          messages.map((msg, index) => {
 
-      {messages.length === 0 ? (
+            const senderId =
+              msg.sender?._id || msg.sender;
 
-        <div className="text-center text-gray-500 mt-10">
+            const isMine =
+              String(senderId) === String(currentUserId);
 
-          No messages yet.
-
-          <p className="text-sm mt-2">
-            Start the conversation.
-          </p>
-
-        </div>
-
-      ) : (
-
-        messages.map((msg, index) => {
-
-          const senderId =
-            msg.sender?._id || msg.sender;
-
-          const isMine =
-            senderId === currentUserId;
-
-          return (
-
-            <div
-              key={msg._id || index}
-              className={`mb-3 flex ${
-                isMine
-                  ? "justify-end"
-                  : "justify-start"
-              }`}
-            >
-
+            return (
               <div
-                className={`px-4 py-2 rounded-lg max-w-xs ${
+                key={msg._id || index}
+                className={`mb-3 flex ${
                   isMine
-                    ? "bg-green-500 text-white"
-                    : "bg-white text-gray-800 shadow"
+                    ? "justify-end"
+                    : "justify-start"
                 }`}
               >
 
-                <p>
-                  {msg.message}
-                </p>
+                <div
+                  className={`px-4 py-3 rounded-2xl max-w-xs shadow-sm ${
+                    isMine
+                      ? "bg-teal-600 text-white rounded-br-md"
+                      : "bg-white text-slate-800 border border-slate-200 rounded-bl-md"
+                  }`}
+                >
 
-                <p className="text-xs mt-1 opacity-70">
+                  <p>
+                    {msg.message}
+                  </p>
 
-                  {msg.createdAt
-                    ? new Date(
-                        msg.createdAt
-                      ).toLocaleTimeString()
-                    : ""}
+                  <p className="text-xs mt-1 opacity-70">
+                    {msg.createdAt
+                      ? new Date(
+                          msg.createdAt
+                        ).toLocaleTimeString()
+                      : ""}
+                  </p>
 
-                </p>
+                </div>
 
               </div>
+            );
 
-            </div>
+          })
 
-          );
+        )}
 
-        })
+        <div ref={bottomRef}></div>
 
+      </div>
+
+      {/* TYPING */}
+      {typing && (
+        <p className="text-slate-500 text-sm px-5 py-2">
+          Typing...
+        </p>
       )}
 
-      <div ref={bottomRef}></div>
+      {/* INPUT */}
+      <div className="flex gap-3 p-4 border-t border-slate-200 bg-white">
 
-    </div>
+        <input
+          type="text"
+          value={message}
+          onChange={handleTyping}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              sendMessage();
+            }
+          }}
+          placeholder="Type a message..."
+          className="flex-1 border border-slate-300
+          rounded-xl px-4 py-3
+          focus:outline-none focus:ring-2
+          focus:ring-teal-500"
+        />
 
+        <button
+          onClick={sendMessage}
+          className="bg-teal-600 hover:bg-teal-700
+          text-white px-6 py-3 rounded-xl
+          font-semibold transition"
+        >
+          Send
+        </button>
 
-    {/* TYPING */}
-
-    {typing && (
-
-      <p className="text-gray-500 text-sm px-3 py-1">
-        Typing...
-      </p>
-
-    )}
-
-
-    {/* INPUT */}
-
-    <div className="flex p-3 border-t">
-
-      <input
-        type="text"
-        value={message}
-        onChange={handleTyping}
-        onKeyDown={(e) => {
-
-          if (e.key === "Enter") {
-            sendMessage();
-          }
-
-        }}
-        placeholder="Type a message..."
-        className="flex-1 border rounded-full px-4 py-2 outline-none"
-      />
-
-      <button
-        onClick={sendMessage}
-        className="ml-2 bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700"
-      >
-        Send
-      </button>
+      </div>
 
     </div>
 
   </div>
-
-</div>
-
-
 );
 
 }
