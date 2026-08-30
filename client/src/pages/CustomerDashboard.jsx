@@ -1,467 +1,473 @@
+
 import { useEffect, useState } from "react";
-import api from "../services/api";
 import { Link } from "react-router-dom";
+import api from "../services/api";
 
 function CustomerDashboard() {
-
   const [bookings, setBookings] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
-
     fetchBookings();
     fetchFavorites();
-
   }, []);
 
   const fetchBookings = async () => {
-
     try {
-
       const token = localStorage.getItem("token");
 
-      const response = await api.get(
-        "/bookings/my",
+      const response = await api.get("/bookings/my", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setBookings(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchFavorites = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await api.get("/favorites", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setFavorites(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removeFavorite = async (serviceId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await api.post(
+        "/favorites",
+        { serviceId },
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
-      setBookings(response.data);
-
+      fetchFavorites();
+      alert("Removed from Favorites 💔");
     } catch (error) {
-
       console.log(error);
-
     }
-
   };
-  const fetchFavorites = async () => {
 
-  try {
+  const cancelBooking = async (bookingId) => {
+    try {
+      const token = localStorage.getItem("token");
 
-    const token = localStorage.getItem("token");
-
-    const response = await api.get(
-      "/favorites",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
+      await api.put(
+        `/bookings/cancel/${bookingId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      }
-    );
+      );
 
-    setFavorites(response.data);
+      alert("Booking Cancelled Successfully");
+      fetchBookings();
+    } catch (error) {
+      console.log(error.response);
 
-  } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          error.message
+      );
+    }
+  };
 
-    console.log(error);
+  return (
+    <div className="min-h-screen bg-slate-50">
 
-  }
+      {/* ================= HEADER ================= */}
 
-};
-const removeFavorite = async (serviceId) => {
+      <section className="bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 text-white">
 
-  try {
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
 
-    const token = localStorage.getItem("token");
+          <p className="text-teal-300 font-semibold uppercase tracking-wider text-xs sm:text-sm">
+            Student GigSphere
+          </p>
 
-    await api.post(
-      "/favorites",
-      { serviceId },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mt-2 leading-tight">
+            Customer Dashboard
+          </h1>
 
-    fetchFavorites();
-    alert("Removed from Favorites 💔");
-
-  } catch (error) {
-
-    console.log(error);
-
-  }
-
-};
-const cancelBooking = async (bookingId) => {
-
-  try {
-
-    const token = localStorage.getItem("token");
-
-    await api.put(
-      `/bookings/cancel/${bookingId}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-
-    alert("Booking Cancelled Successfully");
-
-    fetchBookings();
-
-  } catch (error) {
-
-  console.log(error.response);
-
-  alert(error.response?.data?.message || error.message);
-
-}
-
-};
-
- return (
-
-  <div className="min-h-screen bg-slate-50">
-
-    {/* Header */}
-
-    <section className="bg-gradient-to-r from-slate-950 via-slate-900 to-teal-900 text-white">
-
-      <div className="max-w-7xl mx-auto px-6 py-12">
-
-        <p className="text-teal-300 font-semibold uppercase tracking-wider">
-          Student GigSphere
-        </p>
-
-        <h1 className="text-4xl md:text-5xl font-bold mt-2">
-          Customer Dashboard
-        </h1>
-
-        <p className="text-slate-300 mt-3">
-          Manage your bookings and favorite services in one place.
-        </p>
-
-      </div>
-
-    </section>
-
-
-    {/* Dashboard content */}
-
-    <div className="max-w-7xl mx-auto px-6 py-10">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-
-  <div>
-    <h2 className="text-2xl font-bold text-slate-800">
-      Welcome back! 👋
-    </h2>
-
-    <p className="text-slate-500 mt-1">
-      Find services, manage your bookings and save your favorites.
-    </p>
-  </div>
-
-  <Link
-    to="/"
-    className="inline-block bg-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-teal-700 transition text-center"
-  >
-    🔎 Browse Services
-  </Link>
-
-</div>
-
-
-      {/* Statistics */}
-
-      <div className="grid md:grid-cols-2 gap-6 mb-12">
-
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500 font-medium">
-                Total Bookings
-              </p>
-
-              <p className="text-4xl font-bold text-blue-700 mt-2">
-                {bookings.length}
-              </p>
-
-            </div>
-
-            <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-2xl">
-              📅
-            </div>
-
-          </div>
+          <p className="text-slate-300 mt-3 text-sm sm:text-base max-w-2xl">
+            Manage your bookings and favorite services
+            in one place.
+          </p>
 
         </div>
 
-
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <p className="text-slate-500 font-medium">
-                Favorite Services
-              </p>
-
-              <p className="text-4xl font-bold text-teal-600 mt-2">
-                {favorites.length}
-              </p>
-
-            </div>
-
-            <div className="w-14 h-14 bg-teal-100 rounded-full flex items-center justify-center text-2xl">
-              ❤️
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
+      </section>
 
 
-      {/* Bookings */}
+      {/* ================= MAIN CONTENT ================= */}
 
-      <section>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
-        <div className="flex items-center justify-between mb-6">
+
+        {/* ================= WELCOME ================= */}
+
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
 
           <div>
 
-            <p className="text-blue-600 font-semibold uppercase text-sm">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">
+              Welcome back! 👋
+            </h2>
+
+            <p className="text-slate-500 mt-1 text-sm sm:text-base">
+              Find services, manage your bookings and
+              save your favorites.
+            </p>
+
+          </div>
+
+
+          <Link
+            to="/"
+            className="w-full md:w-auto bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition text-center shadow-sm active:scale-[0.98]"
+          >
+            🔎 Browse Services
+          </Link>
+
+        </div>
+
+
+        {/* ================= STATISTICS ================= */}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-10 sm:mb-12">
+
+          {/* BOOKINGS */}
+
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 sm:p-6">
+
+            <div className="flex items-center justify-between">
+
+              <div>
+
+                <p className="text-slate-500 font-medium text-sm sm:text-base">
+                  Total Bookings
+                </p>
+
+                <p className="text-3xl sm:text-4xl font-bold text-slate-800 mt-2">
+                  {bookings.length}
+                </p>
+
+              </div>
+
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-teal-50 rounded-full flex items-center justify-center text-xl sm:text-2xl">
+                📅
+              </div>
+
+            </div>
+
+          </div>
+
+
+          {/* FAVORITES */}
+
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 sm:p-6">
+
+            <div className="flex items-center justify-between">
+
+              <div>
+
+                <p className="text-slate-500 font-medium text-sm sm:text-base">
+                  Favorite Services
+                </p>
+
+                <p className="text-3xl sm:text-4xl font-bold text-teal-600 mt-2">
+                  {favorites.length}
+                </p>
+
+              </div>
+
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-teal-50 rounded-full flex items-center justify-center text-xl sm:text-2xl">
+                ❤️
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        {/* ================= BOOKINGS ================= */}
+
+        <section>
+
+          <div className="mb-5 sm:mb-6">
+
+            <p className="text-teal-600 font-semibold uppercase text-xs sm:text-sm tracking-wide">
               Your Activity
             </p>
 
-            <h2 className="text-3xl font-bold text-slate-800 mt-1">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mt-1">
               My Bookings
             </h2>
 
           </div>
 
-        </div>
 
+          {/* NO BOOKINGS */}
 
-        {bookings.length === 0 ? (
+          {bookings.length === 0 ? (
 
-          <div className="bg-white border rounded-2xl p-10 text-center">
+            <div className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-10 text-center">
 
-            <div className="text-5xl mb-4">
-              📅
+              <div className="text-4xl sm:text-5xl mb-4">
+                📅
+              </div>
+
+              <h3 className="text-lg sm:text-xl font-bold text-slate-700">
+                No bookings yet
+              </h3>
+
+              <p className="text-slate-500 mt-2 text-sm sm:text-base">
+                Explore services and book your first
+                service.
+              </p>
+
             </div>
 
-            <h3 className="text-xl font-bold text-slate-700">
-              No bookings yet
-            </h3>
+          ) : (
 
-            <p className="text-slate-500 mt-2">
-              Explore services and book your first service.
-            </p>
+            <div className="space-y-4 sm:space-y-5">
 
-          </div>
+              {bookings.map((booking) => (
 
-        ) : (
+                <div
+                  key={booking._id}
+                  className={`bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm ${
+                    booking.status === "cancelled"
+                      ? "opacity-70"
+                      : ""
+                  }`}
+                >
 
-          <div className="space-y-5">
+                  {/* BOOKING INFORMATION */}
 
-            {bookings.map((booking) => (
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
 
-              <div
-                key={booking._id}
-                className={`bg-white border rounded-2xl p-6 shadow-sm ${
-                  booking.status === "cancelled"
-                    ? "opacity-70"
-                    : ""
-                }`}
-              >
+                    <div className="min-w-0">
 
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                      <h3 className="text-lg sm:text-xl font-bold text-slate-800 break-words">
+                        {booking.service?.title ||
+                          "Service unavailable"}
+                      </h3>
 
-                  <div>
+                      <p className="text-slate-500 mt-2 text-sm sm:text-base">
+                        👤 Provider:{" "}
+                        <span className="font-semibold text-slate-700">
+                          {booking.provider?.name ||
+                            "Provider unavailable"}
+                        </span>
+                      </p>
 
-                    <h3 className="text-xl font-bold text-slate-800">
-                      {booking.service?.title ||
-                        "Service unavailable"}
-                    </h3>
+                      <p className="text-slate-500 mt-1 text-sm">
+                        📅 Booked on{" "}
+                        {new Date(
+                          booking.createdAt
+                        ).toLocaleDateString()}
+                      </p>
 
-                    <p className="text-slate-500 mt-2">
-                      👤 Provider:{" "}
-                      <span className="font-semibold text-slate-700">
-                        {booking.provider?.name ||
-                          "Provider unavailable"}
+                    </div>
+
+
+                    {/* PRICE + STATUS */}
+
+                    <div className="flex flex-row sm:flex-col lg:text-right items-center sm:items-end justify-between gap-3">
+
+                      <p className="text-xl sm:text-2xl font-bold text-teal-600">
+                        ₹{booking.service?.price ?? "N/A"}
+                      </p>
+
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs sm:text-sm font-semibold capitalize whitespace-nowrap ${
+                          booking.status === "pending"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : booking.status === "cancelled"
+                            ? "bg-red-100 text-red-700"
+                            : booking.status === "accepted"
+                            ? "bg-teal-100 text-teal-700"
+                            : "bg-slate-100 text-slate-700"
+                        }`}
+                      >
+                        {booking.status}
                       </span>
-                    </p>
 
-                    <p className="text-slate-500 mt-1">
-                      📅 Booked on{" "}
-                      {new Date(
-                        booking.createdAt
-                      ).toLocaleDateString()}
-                    </p>
+                    </div>
 
                   </div>
 
 
-                  <div className="text-left md:text-right">
+                  {/* CANCEL */}
 
-                    <p className="text-2xl font-bold text-teal-600">
-                      ₹{booking.service?.price ?? "N/A"}
-                    </p>
+                  {booking.status === "pending" && (
 
-                    <span
-                      className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${
-                        booking.status === "pending"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : booking.status === "cancelled"
-                          ? "bg-red-100 text-red-700"
-                          : booking.status === "accepted"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-slate-100 text-slate-700"
-                      }`}
+                    <button
+                      onClick={() =>
+                        cancelBooking(booking._id)
+                      }
+                      className="mt-5 w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-5 py-3 sm:py-2 rounded-xl font-semibold transition active:scale-[0.98]"
                     >
-                      {booking.status}
-                    </span>
+                      Cancel Booking
+                    </button>
 
-                  </div>
+                  )}
+
+
+                  {booking.status === "cancelled" && (
+
+                    <button
+                      disabled
+                      className="mt-5 w-full sm:w-auto bg-slate-200 text-slate-500 px-5 py-3 sm:py-2 rounded-xl cursor-not-allowed"
+                    >
+                      Booking Cancelled
+                    </button>
+
+                  )}
 
                 </div>
 
+              ))}
 
-                {/* Cancel button */}
+            </div>
 
-                {booking.status === "pending" && (
+          )}
+
+        </section>
+
+
+        {/* ================= FAVORITES ================= */}
+
+        <section className="mt-12 sm:mt-14">
+
+          <div className="mb-5 sm:mb-6">
+
+            <p className="text-teal-600 font-semibold uppercase text-xs sm:text-sm tracking-wide">
+              Saved Services
+            </p>
+
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mt-1">
+              My Favorite Services
+            </h2>
+
+          </div>
+
+
+          {/* NO FAVORITES */}
+
+          {favorites.length === 0 ? (
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-10 text-center">
+
+              <div className="text-4xl sm:text-5xl mb-4">
+                🤍
+              </div>
+
+              <h3 className="text-lg sm:text-xl font-bold text-slate-700">
+                No favorite services
+              </h3>
+
+              <p className="text-slate-500 mt-2 text-sm sm:text-base max-w-lg mx-auto">
+                Save services you are interested in
+                to find them easily later.
+              </p>
+
+            </div>
+
+          ) : (
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+
+              {favorites.map((fav) => (
+
+                <div
+                  key={fav._id}
+                  className="relative bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-lg transition"
+                >
+
+                  {/* REMOVE FAVORITE */}
 
                   <button
                     onClick={() =>
-                      cancelBooking(booking._id)
+                      removeFavorite(
+                        fav.service?._id
+                      )
                     }
-                    className="mt-5 bg-red-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-red-600 transition"
+                    disabled={!fav.service}
+                    className="absolute top-4 right-4 text-xl sm:text-2xl hover:scale-110 transition disabled:opacity-50 p-1"
+                    title="Remove from favorites"
                   >
-                    Cancel Booking
+                    ❤️
                   </button>
 
-                )}
 
-                {booking.status === "cancelled" && (
+                  {/* ICON */}
 
-                  <button
-                    disabled
-                    className="mt-5 bg-slate-300 text-slate-600 px-5 py-2 rounded-lg cursor-not-allowed"
-                  >
-                    Booking Cancelled
-                  </button>
-
-                )}
-
-              </div>
-
-            ))}
-
-          </div>
-
-        )}
-
-      </section>
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 bg-teal-50 rounded-xl flex items-center justify-center text-lg sm:text-xl mb-4">
+                    ⭐
+                  </div>
 
 
-      {/* Favorites */}
+                  {/* TITLE */}
 
-      <section className="mt-14">
-
-        <div className="mb-6">
-
-          <p className="text-teal-600 font-semibold uppercase text-sm">
-            Saved Services
-          </p>
-
-          <h2 className="text-3xl font-bold text-slate-800 mt-1">
-            My Favorite Services
-          </h2>
-
-        </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-800 pr-8 break-words">
+                    {fav.service?.title ||
+                      "Service unavailable"}
+                  </h3>
 
 
-        {favorites.length === 0 ? (
+                  {/* LOCATION */}
 
-          <div className="bg-white border rounded-2xl p-10 text-center">
-
-            <div className="text-5xl mb-4">
-              🤍
-            </div>
-
-            <h3 className="text-xl font-bold text-slate-700">
-              No favorite services
-            </h3>
-
-            <p className="text-slate-500 mt-2">
-              Save services you are interested in to find them easily later.
-            </p>
-
-          </div>
-
-        ) : (
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-            {favorites.map((fav) => (
-
-              <div
-                key={fav._id}
-                className="relative bg-white border rounded-2xl p-6 shadow-sm hover:shadow-lg transition"
-              >
-
-                <button
-                  onClick={() =>
-                    removeFavorite(fav.service?._id)
-                  }
-                  disabled={!fav.service}
-                  className="absolute top-4 right-4 text-2xl hover:scale-110 transition disabled:opacity-50"
-                  title="Remove from favorites"
-                >
-                  ❤️
-                </button>
+                  <p className="text-slate-500 mt-3 text-sm sm:text-base break-words">
+                    📍{" "}
+                    {fav.service?.location ||
+                      "Location unavailable"}
+                  </p>
 
 
-                <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center text-xl mb-4">
-                  ⭐
+                  {/* PRICE */}
+
+                  <p className="text-xl sm:text-2xl font-bold text-teal-600 mt-4">
+                    ₹{fav.service?.price ?? "N/A"}
+                  </p>
+
                 </div>
 
+              ))}
 
-                <h3 className="text-xl font-bold text-slate-800 pr-8">
-                  {fav.service?.title ||
-                    "Service unavailable"}
-                </h3>
+            </div>
 
+          )}
 
-                <p className="text-slate-500 mt-3">
-                  📍{" "}
-                  {fav.service?.location ||
-                    "Location unavailable"}
-                </p>
+        </section>
 
-
-                <p className="text-2xl font-bold text-teal-600 mt-4">
-                  ₹{fav.service?.price ?? "N/A"}
-                </p>
-
-              </div>
-
-            ))}
-
-          </div>
-
-        )}
-
-      </section>
+      </main>
 
     </div>
+  );
+}
 
-  </div>
+export default CustomerDashboard;
 
-);
-} export default CustomerDashboard;

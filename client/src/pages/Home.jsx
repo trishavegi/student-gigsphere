@@ -176,418 +176,405 @@ function Home() {
   });
 
   return (
+  <div className="min-h-screen bg-slate-50">
 
-    <div className="min-h-screen bg-slate-50">
+    {/* ================= HERO ================= */}
 
-      {/* ================= HERO SECTION ================= */}
+    <section className="bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24 text-center">
 
-<section className="bg-gradient-to-r from-slate-950 via-slate-900 to-teal-900 text-white">
-        <div className="max-w-7xl mx-auto px-6 py-20 text-center">
+        <p className="uppercase tracking-[0.2em] text-teal-300 font-semibold text-xs sm:text-sm mb-4">
+          Student Gig Marketplace
+        </p>
 
-<p className="uppercase tracking-widest text-teal-300 font-semibold mb-4">            Student Gig Marketplace
-          </p>
+        <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold leading-tight mb-5">
+          Welcome to Student GigSphere
+        </h1>
 
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Welcome to Student GigSphere
-          </h1>
+        <p className="text-base sm:text-lg md:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed mb-8">
+          Find trusted student services near you, connect with talented
+          students, and earn by sharing your skills.
+        </p>
 
-          <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-8">
-            Find trusted student services near you, connect with talented
-            students, and earn by sharing your skills.
-          </p>
+        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
 
-          <div className="flex flex-wrap justify-center gap-4">
+          <a
+            href="#services"
+            className="bg-teal-500 hover:bg-teal-400 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-teal-500/20"
+          >
+            Explore Services
+          </a>
 
-            <a
-              href="#services"
-              className="bg-teal-500 text-white px-7 py-3 rounded-xl font-semibold hover:bg-teal-600 transition shadow-lg"
-            >
-              Explore Services
-            </a>
-
-            <a
-              href="#how-it-works"
-              className="bg-teal-500 text-white px-7 py-3 rounded-xl font-semibold hover:bg-teal-600 transition shadow-lg"
-            >
-              How It Works
-            </a>
-
-          </div>
+          <a
+            href="#how-it-works"
+            className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200"
+          >
+            How It Works
+          </a>
 
         </div>
 
-      </section>
+      </div>
+    </section>
 
 
-      {/* ================= TRUST FEATURES ================= */}
+    {/* ================= TRUST FEATURES ================= */}
 
-      <section className="max-w-6xl mx-auto px-6 py-10">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-14">
 
-        <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5 md:gap-6">
 
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center border">
-            <div className="text-4xl mb-3">🎓</div>
+        {[
+          {
+            icon: "🎓",
+            title: "Student Friendly",
+            text: "Services designed around student needs and budgets."
+          },
+          {
+            icon: "📍",
+            title: "Hyperlocal",
+            text: "Discover useful services available around your location."
+          },
+          {
+            icon: "💡",
+            title: "Share Your Skills",
+            text: "Turn your skills into opportunities and earn as a student."
+          }
+        ].map((item) => (
 
-            <h3 className="text-xl font-bold text-slate-800">
-              Student Friendly
+          <div
+            key={item.title}
+            className="bg-white rounded-2xl border border-slate-200 p-6 text-center shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200"
+          >
+
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-teal-50 flex items-center justify-center text-3xl mb-4">
+              {item.icon}
+            </div>
+
+            <h3 className="text-lg md:text-xl font-bold text-slate-800">
+              {item.title}
             </h3>
 
-            <p className="text-slate-500 mt-2">
-              Services designed around student needs and budgets.
+            <p className="text-sm md:text-base text-slate-500 mt-2 leading-relaxed">
+              {item.text}
             </p>
+
           </div>
 
+        ))}
 
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center border">
-            <div className="text-4xl mb-3">📍</div>
+      </div>
 
-            <h3 className="text-xl font-bold text-slate-800">
-              Hyperlocal
-            </h3>
-
-            <p className="text-slate-500 mt-2">
-              Discover useful services available around your location.
-            </p>
-          </div>
+    </section>
 
 
-          <div className="bg-white rounded-2xl shadow-sm p-6 text-center border">
-            <div className="text-4xl mb-3">💡</div>
+    {/* ================= SERVICES ================= */}
 
-            <h3 className="text-xl font-bold text-slate-800">
-              Share Your Skills
-            </h3>
+    <section
+      id="services"
+      className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16"
+    >
 
-            <p className="text-slate-500 mt-2">
-              Turn your skills into opportunities and earn as a student.
-            </p>
-          </div>
+      <div className="text-center mb-8 md:mb-10">
 
-        </div>
+        <p className="text-teal-600 font-semibold uppercase tracking-wide text-sm">
+          Explore
+        </p>
 
-      </section>
+        <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mt-2">
+          Find Student Services
+        </h2>
 
+        <p className="text-sm sm:text-base text-slate-500 mt-3 max-w-xl mx-auto">
+          Search for tutoring, coding, design, editing and more.
+        </p>
 
-      {/* ================= SERVICES ================= */}
-
-      <section
-        id="services"
-        className="max-w-7xl mx-auto px-6 py-12"
-      >
-
-        <div className="text-center mb-10">
-
-          <p className="text-blue-600 font-semibold uppercase tracking-wide">
-            Explore
-          </p>
-
-          <h2 className="text-4xl font-bold text-slate-800 mt-2">
-            Find Student Services
-          </h2>
-
-          <p className="text-slate-500 mt-3">
-            Search for tutoring, coding, design, editing and more.
-          </p>
-
-        </div>
+      </div>
 
 
-        {/* SEARCH */}
+      {/* SEARCH */}
 
-        <div className="max-w-3xl mx-auto mb-6">
+      <div className="max-w-3xl mx-auto mb-5">
+
+        <div className="relative">
+
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+            🔍
+          </span>
 
           <input
             type="text"
-            placeholder="🔍 Search tutoring, coding, design..."
+            placeholder="Search tutoring, coding, design..."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            className="w-full border border-slate-300 bg-white p-4 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full border border-slate-300 bg-white pl-11 pr-4 py-3.5 sm:py-4 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
           />
 
         </div>
 
-
-        {/* DISTANCE FILTER */}
-
-        <div className="flex flex-wrap justify-center gap-3 mb-8">
-
-          <button
-            onClick={() => setDistanceFilter(5)}
-            className={`px-5 py-2 rounded-xl font-medium transition ${
-              distanceFilter === 5
-                ? "bg-teal-600 text-white"
-                : "bg-white border text-slate-700 hover:bg-teal-50"
-            }`}
-          >
-            Within 5 KM
-          </button>
+      </div>
 
 
-          <button
-            onClick={() => setDistanceFilter(10)}
-            className={`px-5 py-2 rounded-xl font-medium transition ${
-              distanceFilter === 10
-                ? "bg-blue-700 text-white"
-                : "bg-white border text-slate-700 hover:bg-blue-50"
-            }`}
-          >
-            Within 10 KM
-          </button>
+      {/* DISTANCE FILTER */}
+
+      <div className="flex flex-wrap justify-center gap-2.5 mb-7">
+
+        <button
+          onClick={() => setDistanceFilter(5)}
+          className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
+            distanceFilter === 5
+              ? "bg-teal-600 text-white shadow-sm"
+              : "bg-white border border-slate-300 text-slate-700 hover:border-teal-400 hover:bg-teal-50"
+          }`}
+        >
+          Within 5 KM
+        </button>
+
+        <button
+          onClick={() => setDistanceFilter(10)}
+          className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
+            distanceFilter === 10
+              ? "bg-teal-600 text-white shadow-sm"
+              : "bg-white border border-slate-300 text-slate-700 hover:border-teal-400 hover:bg-teal-50"
+          }`}
+        >
+          Within 10 KM
+        </button>
+
+        <button
+          onClick={() => setDistanceFilter(20)}
+          className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
+            distanceFilter === 20
+              ? "bg-teal-600 text-white shadow-sm"
+              : "bg-white border border-slate-300 text-slate-700 hover:border-teal-400 hover:bg-teal-50"
+          }`}
+        >
+          Within 20 KM
+        </button>
+
+        <button
+          onClick={() => setDistanceFilter(null)}
+          className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
+            distanceFilter === null
+              ? "bg-slate-800 text-white shadow-sm"
+              : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-100"
+          }`}
+        >
+          All Services
+        </button>
+
+      </div>
 
 
-          <button
-            onClick={() => setDistanceFilter(20)}
-            className={`px-5 py-2 rounded-xl font-medium transition ${
-              distanceFilter === 20
-                ? "bg-blue-700 text-white"
-                : "bg-white border text-slate-700 hover:bg-blue-50"
-            }`}
-          >
-            Within 20 KM
-          </button>
+      {/* RESULT COUNT */}
+
+      <p className="text-center text-sm text-slate-500 mb-7">
+
+        Showing{" "}
+
+        <span className="font-bold text-teal-700">
+          {filteredServices.length}
+        </span>{" "}
+
+        services
+
+      </p>
 
 
-          <button
-            onClick={() => setDistanceFilter(null)}
-            className={`px-5 py-2 rounded-xl font-medium transition ${
-              distanceFilter === null
-                ? "bg-slate-700 text-white"
-                : "bg-white border text-slate-700 hover:bg-slate-100"
-            }`}
-          >
-            All Services
-          </button>
+      {/* SERVICE CARDS */}
 
-        </div>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7">
 
+        {filteredServices.length === 0 ? (
 
-        {/* RESULT COUNT */}
+          <div className="col-span-full bg-white rounded-2xl border border-slate-200 p-8 sm:p-12 text-center shadow-sm">
 
-        <p className="text-center text-slate-500 mb-8">
-
-          Showing{" "}
-          <span className="font-bold text-blue-700">
-            {filteredServices.length}
-          </span>{" "}
-          services
-
-        </p>
-
-
-        {/* SERVICE CARDS */}
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
-
-          {filteredServices.length === 0 ? (
-
-            <div className="col-span-full text-center bg-white rounded-2xl p-12 shadow-sm">
-
-              <div className="text-5xl mb-4">
-                🔎
-              </div>
-
-              <h2 className="text-2xl font-bold text-slate-700">
-                No services found
-              </h2>
-
-              <p className="text-slate-500 mt-2">
-                Try another keyword or select a larger distance.
-              </p>
-
+            <div className="text-5xl mb-4">
+              🔎
             </div>
 
-          ) : (
-
-            filteredServices.map((service) => (
-
-              <ServiceCard
-                key={service._id}
-                service={service}
-              />
-
-            ))
-
-          )}
-
-        </div>
-
-      </section>
-
-
-      {/* ================= HOW IT WORKS ================= */}
-
-      <section
-        id="how-it-works"
-        className="bg-white border-y"
-      >
-
-        <div className="max-w-7xl mx-auto px-6 py-16">
-
-          <div className="text-center mb-12">
-
-            <p className="text-blue-600 font-semibold uppercase">
-              Simple Process
-            </p>
-
-            <h2 className="text-4xl font-bold text-slate-800 mt-2">
-              How It Works
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-700">
+              No services found
             </h2>
 
-            <p className="text-slate-500 mt-3">
-              Getting started with GigSphere is simple.
+            <p className="text-sm sm:text-base text-slate-500 mt-2">
+              Try another keyword or select a larger distance.
+            </p>
+
+          </div>
+
+        ) : (
+
+          filteredServices.map((service) => (
+
+            <ServiceCard
+              key={service._id}
+              service={service}
+            />
+
+          ))
+
+        )}
+
+      </div>
+
+    </section>
+
+
+    {/* ================= HOW IT WORKS ================= */}
+
+    <section
+      id="how-it-works"
+      className="bg-white border-y border-slate-200"
+    >
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+
+        <div className="text-center mb-10 md:mb-12">
+
+          <p className="text-teal-600 font-semibold uppercase tracking-wide text-sm">
+            Simple Process
+          </p>
+
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-800 mt-2">
+            How It Works
+          </h2>
+
+          <p className="text-slate-500 mt-3">
+            Getting started with GigSphere is simple.
+          </p>
+
+        </div>
+
+
+        <div className="grid md:grid-cols-3 gap-10 md:gap-8">
+
+          {[
+            {
+              number: "1",
+              title: "Find a Service",
+              text: "Search for a service based on your needs, category and distance."
+            },
+            {
+              number: "2",
+              title: "Connect",
+              text: "View the provider's service and send a booking request."
+            },
+            {
+              number: "3",
+              title: "Get Your Work Done",
+              text: "Connect with the student provider and complete your task."
+            }
+          ].map((item) => (
+
+            <div
+              key={item.number}
+              className="text-center"
+            >
+
+              <div className="w-14 h-14 md:w-16 md:h-16 mx-auto bg-teal-50 text-teal-700 rounded-full flex items-center justify-center text-xl md:text-2xl font-bold border border-teal-100">
+                {item.number}
+              </div>
+
+              <h3 className="text-lg md:text-xl font-bold text-slate-800 mt-5">
+                {item.title}
+              </h3>
+
+              <p className="text-sm md:text-base text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+                {item.text}
+              </p>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    {/* ================= ABOUT ================= */}
+
+    <section className="bg-slate-900 text-white">
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 md:py-20">
+
+        <div className="grid md:grid-cols-2 gap-10 md:gap-12 items-center">
+
+          <div>
+
+            <p className="text-teal-400 font-semibold uppercase tracking-wide text-sm">
+              About GigSphere
+            </p>
+
+            <h2 className="text-3xl sm:text-4xl font-bold mt-3 mb-5 leading-tight">
+              Built for students, by students.
+            </h2>
+
+            <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+              Student GigSphere is a hyperlocal marketplace that helps
+              students discover affordable services and gives skilled
+              students an opportunity to earn.
+            </p>
+
+            <p className="text-slate-300 leading-relaxed mt-4 text-sm sm:text-base">
+              Whether you need tutoring, coding assistance, design,
+              photography or editing, GigSphere brings useful student
+              services closer to you.
             </p>
 
           </div>
 
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
 
-            <div className="text-center">
+            {[
+              ["🎓", "Student Community"],
+              ["💰", "Affordable"],
+              ["📍", "Local Services"],
+              ["🚀", "Student Opportunities"]
+            ].map(([icon, title]) => (
 
-              <div className="w-16 h-16 mx-auto bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-2xl font-bold">
-                1
+              <div
+                key={title}
+                className="bg-slate-800 border border-slate-700 rounded-2xl p-4 sm:p-6 hover:bg-slate-750 transition"
+              >
+
+                <div className="text-2xl sm:text-3xl">
+                  {icon}
+                </div>
+
+                <h3 className="font-bold mt-3 text-sm sm:text-base">
+                  {title}
+                </h3>
+
               </div>
 
-              <h3 className="text-xl font-bold mt-5">
-                Find a Service
-              </h3>
-
-              <p className="text-slate-500 mt-2">
-                Search for a service based on your needs, category and
-                distance.
-              </p>
-
-            </div>
-
-
-            <div className="text-center">
-
-              <div className="w-16 h-16 mx-auto bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-2xl font-bold">
-                2
-              </div>
-
-              <h3 className="text-xl font-bold mt-5">
-                Connect
-              </h3>
-
-              <p className="text-slate-500 mt-2">
-                View the provider's service and send a booking request.
-              </p>
-
-            </div>
-
-
-            <div className="text-center">
-
-              <div className="w-16 h-16 mx-auto bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-2xl font-bold">
-                3
-              </div>
-
-              <h3 className="text-xl font-bold mt-5">
-                Get Your Work Done
-              </h3>
-
-              <p className="text-slate-500 mt-2">
-                Connect with the student provider and complete your task.
-              </p>
-
-            </div>
+            ))}
 
           </div>
 
         </div>
 
-      </section>
+      </div>
+
+    </section>
 
 
-      {/* ================= ABOUT ================= */}
+    {/* ================= FOOTER ================= */}
 
-      <section className="bg-slate-900 text-white">
+    <footer className="bg-slate-950 text-slate-400 text-center px-4 py-6">
 
-        <div className="max-w-6xl mx-auto px-6 py-16">
+      <p className="text-xs sm:text-sm">
+        © 2026 Student GigSphere. Connecting students with opportunities.
+      </p>
 
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+    </footer>
 
-            <div>
-
-              <p className="text-blue-400 font-semibold uppercase tracking-wide">
-                About GigSphere
-              </p>
-
-              <h2 className="text-4xl font-bold mt-3 mb-5">
-                Built for students, by students.
-              </h2>
-
-              <p className="text-slate-300 leading-relaxed">
-                Student GigSphere is a hyperlocal marketplace that helps
-                students discover affordable services and gives skilled
-                students an opportunity to earn.
-              </p>
-
-              <p className="text-slate-300 leading-relaxed mt-4">
-                Whether you need tutoring, coding assistance, design,
-                photography or editing, GigSphere brings useful student
-                services closer to you.
-              </p>
-
-            </div>
-
-
-            <div className="grid grid-cols-2 gap-4">
-
-              <div className="bg-slate-800 rounded-2xl p-6">
-                <div className="text-3xl">🎓</div>
-                <h3 className="font-bold mt-3">
-                  Student Community
-                </h3>
-              </div>
-
-
-              <div className="bg-slate-800 rounded-2xl p-6">
-                <div className="text-3xl">💰</div>
-                <h3 className="font-bold mt-3">
-                  Affordable
-                </h3>
-              </div>
-
-
-              <div className="bg-slate-800 rounded-2xl p-6">
-                <div className="text-3xl">📍</div>
-                <h3 className="font-bold mt-3">
-                  Local Services
-                </h3>
-              </div>
-
-
-              <div className="bg-slate-800 rounded-2xl p-6">
-                <div className="text-3xl">🚀</div>
-                <h3 className="font-bold mt-3">
-                  Student Opportunities
-                </h3>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      {/* ================= FOOTER ================= */}
-
-      <footer className="bg-slate-950 text-slate-400 text-center py-6">
-
-        <p>
-          © 2026 Student GigSphere. Connecting students with opportunities.
-        </p>
-
-      </footer>
-
-    </div>
-
-  );
+  </div>
+);
 
 }
 

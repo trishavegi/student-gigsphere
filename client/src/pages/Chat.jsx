@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import api from "../services/api";
 
@@ -18,482 +18,513 @@ socket.on("disconnect", () => {
 });
 
 function Chat() {
+  const { id: receiverId } = useParams();
+  const navigate = useNavigate();
 
-const { id: receiverId } = useParams();
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [typing, setTyping] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
-const [message, setMessage] = useState("");
-const [messages, setMessages] = useState([]);
-const [typing, setTyping] = useState(false);
-const [onlineUsers, setOnlineUsers] = useState([]);
+  const bottomRef = useRef(null);
 
-const bottomRef = useRef(null);
+  const currentUserId = localStorage.getItem("userId");
 
-const currentUserId = localStorage.getItem("userId");
+  // ===============================
+  // LOAD OLD MESSAGES
+  // ===============================
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await api.get(`/chat/${receiverId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
-// ===============================
-// LOAD OLD MESSAGES
-// ===============================
-useEffect(() => {
-
-const fetchMessages = async () => {
-
-  try {
-
-    const response = await api.get(
-      `/chat/${receiverId}`,
-      {
-        headers: {
-          Authorization:
-            `Bearer ${localStorage.getItem("token")}`
-        }
+        setMessages(response.data);
+      } catch (error) {
+        console.error(
+          "FETCH MESSAGES ERROR:",
+          error.response?.data || error.message
+        );
       }
-    );
+    };
 
-    console.log("MESSAGES:", response.data);
+    fetchMessages();
+  }, [receiverId]);
 
-    setMessages(response.data);
-
-  } catch (error) {
-
-    console.error(
-      "FETCH MESSAGES ERROR:",
-      error.response?.data || error.message
-    );
-
-  }
-
-};
-
-fetchMessages();
-
-
-}, [receiverId]);
-
-// ===============================
-// RECEIVE MESSAGE
-// ===============================
-useEffect(() => {
-
-  const receiveMessage = (data) => {
-
-    console.log("========== RECEIVED SOCKET MESSAGE ==========");
-    console.log("DATA:", data);
-
-    const senderId = String(
-      data.sender?._id || data.sender || ""
-    );
-
-    const receiverIdFromMessage = String(
-      data.receiver?._id || data.receiver || ""
-    );
-
-    const currentId = String(
-      currentUserId || ""
-    );
-
-    const chatUserId = String(
-      receiverId || ""
-    );
-
-    console.log("Sender ID:", senderId);
-    console.log("Receiver ID:", receiverIdFromMessage);
-    console.log("Current User ID:", currentId);
-    console.log("Chat User ID:", chatUserId);
-
-    const belongsToChat =
-      (
-        senderId === chatUserId &&
-        receiverIdFromMessage === currentId
-      ) ||
-      (
-        senderId === currentId &&
-        receiverIdFromMessage === chatUserId
+  // ===============================
+  // RECEIVE MESSAGE
+  // ===============================
+  useEffect(() => {
+    const receiveMessage = (data) => {
+      const senderId = String(
+        data.sender?._id || data.sender || ""
       );
 
-    console.log(
-      "BELONGS TO THIS CHAT:",
-      belongsToChat
-    );
+      const receiverIdFromMessage = String(
+        data.receiver?._id || data.receiver || ""
+      );
 
-    if (belongsToChat) {
+      const currentId = String(currentUserId || "");
+      const chatUserId = String(receiverId || "");
 
-      setMessages((prev) => {
+      const belongsToChat =
+        (senderId === chatUserId &&
+          receiverIdFromMessage === currentId) ||
+        (senderId === currentId &&
+          receiverIdFromMessage === chatUserId);
 
-        // Prevent duplicate message
-        if (
-          data._id &&
-          prev.some(
-            (msg) => msg._id === data._id
-          )
-        ) {
-          return prev;
-        }
+      if (belongsToChat) {
+        setMessages((prev) => {
+          if (
+            data._id &&
+            prev.some((msg) => msg._id === data._id)
+          ) {
+            return prev;
+          }
 
-        return [
-          ...prev,
-          data
-        ];
-
-      });
-
-    }
-
-  };
-socket.on(
-    "receive_message",
-    receiveMessage
-  );
-
-  return () => {
-
-    socket.off(
-      "receive_message",
-      receiveMessage
-    );
-
-  };
-
-}, [
-  receiverId,
-  currentUserId
-]);
-
-// ===============================
-// ONLINE USERS
-// ===============================
-useEffect(() => {
-
-  if (!currentUserId) {
-    console.log("🔴 USER ID NOT FOUND");
-    return;
-  }
-
-  console.log(
-    "🟢 REGISTERING USER ONLINE:",
-    currentUserId
-  );
-
-  const registerUser = () => {
-
-    console.log(
-      "📡 Sending user_online:",
-      currentUserId
-    );
-
-    socket.emit(
-      "user_online",
-      currentUserId
-    );
-
-  };
-
-  if (socket.connected) {
-    registerUser();
-  } else {
-    socket.on("connect", registerUser);
-  }
-
-  const handleOnlineUsers = (users) => {
-
-    console.log(
-      "👥 ONLINE USERS:",
-      users
-    );
-
-    setOnlineUsers(users);
-
-  };
-
-  socket.on(
-    "online_users",
-    handleOnlineUsers
-  );
-
-  return () => {
-
-    socket.off(
-      "connect",
-      registerUser
-    );
-
-    socket.off(
-      "online_users",
-      handleOnlineUsers
-    );
-
-  };
-
-}, [currentUserId]);
-
-// ===============================
-// TYPING
-// ===============================
-useEffect(() => {
-
-
-const handleTyping = (data) => {
-
-  if (data?.sender === receiverId) {
-
-    setTyping(true);
-
-    setTimeout(() => {
-      setTyping(false);
-    }, 1000);
-
-  }
-
-};
-
-socket.on(
-  "typing",
-  handleTyping
-);
-
-return () => {
-
-  socket.off(
-    "typing",
-    handleTyping
-  );
-
-};
-
-
-}, [receiverId]);
-
-// ===============================
-// AUTO SCROLL
-// ===============================
-useEffect(() => {
-
-
-bottomRef.current?.scrollIntoView({
-  behavior: "smooth"
-});
-
-
-}, [messages]);
-
-// ===============================
-// SEND MESSAGE
-// ===============================
-const sendMessage = async () => {
-
-if (!message.trim()) {
-  return;
-}
-
-try {
-
-  const response = await api.post(
-    "/chat",
-    {
-      receiver: receiverId,
-      message: message.trim()
-    },
-    {
-      headers: {
-        Authorization:
-          `Bearer ${localStorage.getItem("token")}`
+          return [...prev, data];
+        });
       }
+    };
+
+    socket.on("receive_message", receiveMessage);
+
+    return () => {
+      socket.off("receive_message", receiveMessage);
+    };
+  }, [receiverId, currentUserId]);
+
+  // ===============================
+  // ONLINE USERS
+  // ===============================
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    const registerUser = () => {
+      socket.emit("user_online", currentUserId);
+    };
+
+    if (socket.connected) {
+      registerUser();
+    } else {
+      socket.on("connect", registerUser);
     }
-  );
 
-  console.log(
-    "SENT MESSAGE:",
-    response.data
-  );
+    const handleOnlineUsers = (users) => {
+      setOnlineUsers(users);
+    };
 
-  // Add message immediately for sender
-  setMessages((prev) => [
-    ...prev,
-    response.data
-  ]);
+    socket.on("online_users", handleOnlineUsers);
 
-  // Send through Socket.IO
-  socket.emit(
-    "send_message",
-    response.data
-  );
+    return () => {
+      socket.off("connect", registerUser);
+      socket.off("online_users", handleOnlineUsers);
+    };
+  }, [currentUserId]);
 
-  setMessage("");
+  // ===============================
+  // TYPING
+  // ===============================
+  useEffect(() => {
+    const handleTyping = (data) => {
+      if (data?.sender === receiverId) {
+        setTyping(true);
 
-} catch (error) {
+        setTimeout(() => {
+          setTyping(false);
+        }, 1000);
+      }
+    };
 
-  console.error(
-    "SEND MESSAGE ERROR:",
-    error.response?.data || error.message
-  );
+    socket.on("typing", handleTyping);
 
-  alert(
-    error.response?.data?.message ||
-    "Unable to send message"
-  );
+    return () => {
+      socket.off("typing", handleTyping);
+    };
+  }, [receiverId]);
 
-}
+  // ===============================
+  // AUTO SCROLL
+  // ===============================
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
 
+  // ===============================
+  // SEND MESSAGE
+  // ===============================
+  const sendMessage = async () => {
+    if (!message.trim()) return;
 
-};
+    try {
+      const response = await api.post(
+        "/chat",
+        {
+          receiver: receiverId,
+          message: message.trim(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-// ===============================
-// INPUT TYPING
-// ===============================
-const handleTyping = (e) => {
+      setMessages((prev) => [...prev, response.data]);
 
+      socket.emit("send_message", response.data);
 
-setMessage(e.target.value);
+      setMessage("");
+    } catch (error) {
+      console.error(
+        "SEND MESSAGE ERROR:",
+        error.response?.data || error.message
+      );
 
-socket.emit(
-  "typing",
-  {
-    sender: currentUserId,
-    receiver: receiverId
-  }
-);
+      alert(
+        error.response?.data?.message ||
+          "Unable to send message"
+      );
+    }
+  };
 
+  // ===============================
+  // INPUT TYPING
+  // ===============================
+  const handleTyping = (e) => {
+    setMessage(e.target.value);
 
-};
+    socket.emit("typing", {
+      sender: currentUserId,
+      receiver: receiverId,
+    });
+  };
 
-return (
-  <div className="min-h-screen bg-slate-50 flex justify-center items-center px-4 py-6">
+  const isOnline = onlineUsers.includes(receiverId);
 
-    <div className="w-full max-w-2xl h-[650px] bg-white
-      rounded-3xl shadow-xl border border-slate-200
-      flex flex-col overflow-hidden">
+  return (
+    <div className="min-h-[calc(100vh-64px)] bg-slate-100 flex justify-center">
 
-      {/* HEADER */}
-      <div className="bg-gradient-to-r from-slate-900 to-teal-800
-        text-white p-5">
+      {/* CHAT CONTAINER */}
+      <div
+        className="
+          w-full
+          max-w-3xl
+          bg-white
+          shadow-xl
+          border-x
+          border-slate-200
+          flex
+          flex-col
+          h-[calc(100vh-64px)]
+          sm:h-[calc(100vh-80px)]
+          sm:my-5
+          sm:rounded-2xl
+          sm:border
+          overflow-hidden
+        "
+      >
 
-        <h1 className="text-xl font-bold">
-          💬 Chat
-        </h1>
+        {/* ================= HEADER ================= */}
+        <div
+          className="
+            bg-gradient-to-r
+            from-slate-950
+            via-slate-900
+            to-teal-800
+            text-white
+            px-4
+            sm:px-6
+            py-4
+            flex
+            items-center
+            gap-3
+            shadow-md
+          "
+        >
 
-        <p className="text-sm text-slate-300 mt-1">
-          {onlineUsers.includes(receiverId)
-            ? "🟢 Online"
-            : "⚫ Offline"}
-        </p>
+          {/* BACK BUTTON - MOBILE */}
+          <button
+            onClick={() => navigate(-1)}
+            className="
+              sm:hidden
+              w-9
+              h-9
+              rounded-full
+              bg-white/10
+              hover:bg-white/20
+              flex
+              items-center
+              justify-center
+              transition
+            "
+          >
+            ←
+          </button>
 
-      </div>
-
-      {/* MESSAGES */}
-      <div className="flex-1 overflow-y-auto p-5 bg-slate-50">
-
-        {messages.length === 0 ? (
-
-          <div className="text-center text-slate-500 mt-20">
-
-            <div className="text-5xl mb-4">
-              💬
-            </div>
-
-            <p className="font-semibold">
-              No messages yet
-            </p>
-
-            <p className="text-sm mt-2">
-              Start the conversation.
-            </p>
-
+          {/* AVATAR */}
+          <div
+            className="
+              w-10
+              h-10
+              sm:w-11
+              sm:h-11
+              rounded-full
+              bg-teal-500
+              flex
+              items-center
+              justify-center
+              font-bold
+              text-lg
+              shadow
+            "
+          >
+            💬
           </div>
 
-        ) : (
+          <div className="min-w-0">
+            <h1 className="font-bold text-base sm:text-lg">
+              Chat
+            </h1>
 
-          messages.map((msg, index) => {
+            <p
+              className={`text-xs sm:text-sm ${
+                isOnline
+                  ? "text-teal-200"
+                  : "text-slate-300"
+              }`}
+            >
+              {isOnline ? "● Online" : "● Offline"}
+            </p>
+          </div>
 
-            const senderId =
-              msg.sender?._id || msg.sender;
+        </div>
 
-            const isMine =
-              String(senderId) === String(currentUserId);
+        {/* ================= MESSAGES ================= */}
+        <div
+          className="
+            flex-1
+            overflow-y-auto
+            px-3
+            py-4
+            sm:px-5
+            sm:py-5
+            bg-slate-50
+          "
+        >
 
-            return (
+          {messages.length === 0 ? (
+
+            <div
+              className="
+                flex
+                flex-col
+                items-center
+                justify-center
+                h-full
+                text-center
+                text-slate-500
+                px-6
+              "
+            >
+
               <div
-                key={msg._id || index}
-                className={`mb-3 flex ${
-                  isMine
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
+                className="
+                  w-16
+                  h-16
+                  rounded-full
+                  bg-teal-50
+                  flex
+                  items-center
+                  justify-center
+                  text-3xl
+                  mb-4
+                "
               >
+                💬
+              </div>
 
+              <p className="font-semibold text-slate-700">
+                No messages yet
+              </p>
+
+              <p className="text-sm mt-1">
+                Start the conversation.
+              </p>
+
+            </div>
+
+          ) : (
+
+            messages.map((msg, index) => {
+
+              const senderId =
+                msg.sender?._id || msg.sender;
+
+              const isMine =
+                String(senderId) ===
+                String(currentUserId);
+
+              return (
                 <div
-                  className={`px-4 py-3 rounded-2xl max-w-xs shadow-sm ${
+                  key={msg._id || index}
+                  className={`mb-3 flex ${
                     isMine
-                      ? "bg-teal-600 text-white rounded-br-md"
-                      : "bg-white text-slate-800 border border-slate-200 rounded-bl-md"
+                      ? "justify-end"
+                      : "justify-start"
                   }`}
                 >
 
-                  <p>
-                    {msg.message}
-                  </p>
+                  <div
+                    className={`
+                      max-w-[80%]
+                      sm:max-w-md
+                      px-4
+                      py-3
+                      rounded-2xl
+                      shadow-sm
+                      break-words
+                      ${
+                        isMine
+                          ? `
+                            bg-teal-600
+                            text-white
+                            rounded-br-md
+                          `
+                          : `
+                            bg-white
+                            text-slate-800
+                            border
+                            border-slate-200
+                            rounded-bl-md
+                          `
+                      }
+                    `}
+                  >
 
-                  <p className="text-xs mt-1 opacity-70">
-                    {msg.createdAt
-                      ? new Date(
-                          msg.createdAt
-                        ).toLocaleTimeString()
-                      : ""}
-                  </p>
+                    <p className="text-sm sm:text-base leading-relaxed">
+                      {msg.message}
+                    </p>
+
+                    <p className="text-[10px] sm:text-xs mt-1 opacity-60 text-right">
+                      {msg.createdAt
+                        ? new Date(
+                            msg.createdAt
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : ""}
+                    </p>
+
+                  </div>
 
                 </div>
+              );
+            })
 
-              </div>
-            );
+          )}
 
-          })
+          <div ref={bottomRef} />
 
+        </div>
+
+        {/* ================= TYPING ================= */}
+        {typing && (
+          <div className="px-4 py-2 bg-white border-t border-slate-100">
+            <p className="text-xs sm:text-sm text-slate-500">
+              Typing...
+            </p>
+          </div>
         )}
 
-        <div ref={bottomRef}></div>
-
-      </div>
-
-      {/* TYPING */}
-      {typing && (
-        <p className="text-slate-500 text-sm px-5 py-2">
-          Typing...
-        </p>
-      )}
-
-      {/* INPUT */}
-      <div className="flex gap-3 p-4 border-t border-slate-200 bg-white">
-
-        <input
-          type="text"
-          value={message}
-          onChange={handleTyping}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              sendMessage();
-            }
-          }}
-          placeholder="Type a message..."
-          className="flex-1 border border-slate-300
-          rounded-xl px-4 py-3
-          focus:outline-none focus:ring-2
-          focus:ring-teal-500"
-        />
-
-        <button
-          onClick={sendMessage}
-          className="bg-teal-600 hover:bg-teal-700
-          text-white px-6 py-3 rounded-xl
-          font-semibold transition"
+        {/* ================= INPUT ================= */}
+        <div
+          className="
+            p-3
+            sm:p-4
+            border-t
+            border-slate-200
+            bg-white
+          "
         >
-          Send
-        </button>
+
+          <div className="flex items-center gap-2">
+
+            <input
+              type="text"
+              value={message}
+              onChange={handleTyping}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
+                }
+              }}
+              placeholder="Type a message..."
+              className="
+                flex-1
+                min-w-0
+                border
+                border-slate-300
+                rounded-xl
+                px-3
+                sm:px-4
+                py-3
+                text-sm
+                sm:text-base
+                focus:outline-none
+                focus:ring-2
+                focus:ring-teal-500
+                focus:border-teal-500
+                transition
+              "
+            />
+
+            <button
+              onClick={sendMessage}
+              className="
+                bg-teal-600
+                hover:bg-teal-700
+                active:scale-95
+                text-white
+                px-4
+                sm:px-6
+                py-3
+                rounded-xl
+                font-semibold
+                text-sm
+                sm:text-base
+                transition
+                shadow-sm
+                shrink-0
+              "
+            >
+              <span className="hidden sm:inline">
+                Send
+              </span>
+
+              <span className="sm:hidden">
+                ➤
+              </span>
+            </button>
+
+          </div>
+
+          <p className="hidden sm:block text-[11px] text-slate-400 mt-2 ml-1">
+            Press Enter to send
+          </p>
+
+        </div>
 
       </div>
 
     </div>
-
-  </div>
-);
-
+  );
 }
 
 export default Chat;

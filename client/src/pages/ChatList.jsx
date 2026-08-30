@@ -24,160 +24,252 @@ function ChatList() {
 
       const response = await api.get("/chat", {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       console.log("CHAT RESPONSE:", response.data);
 
       setChats(response.data);
-
     } catch (error) {
-
       console.error(
         "CHAT LIST ERROR:",
         error.response?.data || error.message
       );
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
+  // =========================
+  // LOADING
+  // =========================
+
   if (loading) {
     return (
-      <div className="max-w-md mx-auto mt-10 bg-white shadow rounded-lg p-6">
-        <h1 className="text-2xl font-bold mb-5">
-          Chats
-        </h1>
+      <div className="min-h-screen bg-slate-50 px-4 py-6 sm:py-10">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
+              Chats
+            </h1>
 
-        <p className="text-gray-500 text-center">
-          Loading chats...
-        </p>
+            <p className="text-slate-500 text-center py-12">
+              Loading chats...
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-  <div className="min-h-screen bg-slate-50 py-10 px-4">
+    <div className="min-h-screen bg-slate-50 px-3 sm:px-4 py-5 sm:py-10">
 
-    <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto">
 
-      <div className="bg-gradient-to-r from-slate-900 to-teal-800
-        text-white rounded-3xl p-7 mb-6 shadow-lg">
+        {/* =========================
+            HEADER
+        ========================= */}
 
-        <p className="text-teal-300 text-sm font-semibold uppercase tracking-wider">
-          Student GigSphere
-        </p>
+        <div
+          className="
+            bg-gradient-to-br
+            from-slate-950
+            via-slate-900
+            to-teal-800
+            text-white
+            rounded-2xl
+            sm:rounded-3xl
+            px-5
+            py-6
+            sm:p-8
+            mb-4
+            sm:mb-6
+            shadow-lg
+          "
+        >
 
-        <h1 className="text-3xl font-bold mt-2">
-          Messages 💬
-        </h1>
+          <p className="text-teal-300 text-xs sm:text-sm font-semibold uppercase tracking-wider">
+            Student GigSphere
+          </p>
 
-        <p className="text-slate-300 mt-2">
-          Continue your conversations.
-        </p>
+          <h1 className="text-2xl sm:text-3xl font-bold mt-2">
+            Messages 💬
+          </h1>
 
-      </div>
+          <p className="text-slate-300 text-sm sm:text-base mt-2">
+            Continue your conversations.
+          </p>
 
-      <div className="bg-white rounded-2xl shadow-sm
-        border border-slate-200 overflow-hidden">
+        </div>
 
-        {chats.length === 0 ? (
 
-          <div className="p-12 text-center">
+        {/* =========================
+            CHAT LIST
+        ========================= */}
 
-            <div className="text-5xl mb-4">
-              💬
+        <div
+          className="
+            bg-white
+            rounded-2xl
+            shadow-sm
+            border
+            border-slate-200
+            overflow-hidden
+          "
+        >
+
+          {chats.length === 0 ? (
+
+            /* EMPTY STATE */
+
+            <div className="px-5 py-14 sm:p-12 text-center">
+
+              <div className="text-5xl mb-4">
+                💬
+              </div>
+
+              <p className="text-lg font-bold text-slate-700">
+                No chats yet
+              </p>
+
+              <p className="text-sm sm:text-base text-slate-500 mt-2">
+                Start a conversation with a provider.
+              </p>
+
             </div>
 
-            <p className="text-lg font-bold text-slate-700">
-              No chats yet
-            </p>
+          ) : (
 
-            <p className="text-slate-500 mt-2">
-              Start a conversation with a provider.
-            </p>
+            chats.map((chat) => {
 
-          </div>
+              const otherUser = chat.user;
 
-        ) : (
+              if (!otherUser) {
+                return null;
+              }
 
-          chats.map((chat) => {
+              return (
 
-            const otherUser = chat.user;
+                <button
+                  key={chat._id}
+                  type="button"
+                  onClick={() =>
+                    navigate(`/chat/${otherUser._id}`)
+                  }
+                  className="
+                    w-full
+                    text-left
+                    px-4
+                    py-4
+                    sm:px-5
+                    sm:py-5
+                    border-b
+                    last:border-b-0
+                    hover:bg-teal-50
+                    active:bg-teal-100
+                    transition
+                    focus:outline-none
+                    focus:bg-teal-50
+                  "
+                >
 
-            if (!otherUser) {
-              return null;
-            }
+                  <div className="flex items-center gap-3 sm:gap-4">
 
-            return (
-              <div
-                key={chat._id}
-                onClick={() =>
-                  navigate(`/chat/${otherUser._id}`)
-                }
-                className="p-5 border-b last:border-b-0
-                hover:bg-teal-50 cursor-pointer transition"
-              >
+                    {/* AVATAR */}
 
-                <div className="flex items-center gap-4">
+                    <div
+                      className="
+                        w-11
+                        h-11
+                        sm:w-12
+                        sm:h-12
+                        rounded-full
+                        bg-teal-600
+                        text-white
+                        flex
+                        items-center
+                        justify-center
+                        text-base
+                        sm:text-lg
+                        font-bold
+                        shrink-0
+                      "
+                    >
 
-                  <div className="w-12 h-12 rounded-full
-                    bg-teal-600 text-white
-                    flex items-center justify-center
-                    text-lg font-bold shrink-0">
+                      {otherUser.name
+                        ? otherUser.name
+                            .charAt(0)
+                            .toUpperCase()
+                        : "U"}
 
-                    {otherUser.name
-                      ? otherUser.name
-                          .charAt(0)
-                          .toUpperCase()
-                      : "U"}
+                    </div>
+
+
+                    {/* CHAT INFORMATION */}
+
+                    <div className="flex-1 min-w-0">
+
+                      <div className="font-bold text-slate-800 text-sm sm:text-base truncate">
+                        {otherUser.name || "Unknown User"}
+                      </div>
+
+                      <div className="text-slate-500 text-sm truncate mt-1">
+                        {chat.message || "No message"}
+                      </div>
+
+                      <div className="text-xs text-slate-400 mt-1">
+                        {chat.createdAt
+                          ? new Date(
+                              chat.createdAt
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : ""}
+                      </div>
+
+                    </div>
+
+
+                    {/* UNREAD */}
+
+                    {!chat.isRead && (
+                      <div
+                        className="
+                          w-2.5
+                          h-2.5
+                          sm:w-3
+                          sm:h-3
+                          bg-teal-600
+                          rounded-full
+                          shrink-0
+                        "
+                      />
+                    )}
+
+                    {/* ARROW */}
+
+                    <span className="text-slate-400 text-lg shrink-0">
+                      ›
+                    </span>
 
                   </div>
 
-                  <div className="flex-1 min-w-0">
+                </button>
 
-                    <div className="font-bold text-slate-800">
-                      {otherUser.name || "Unknown User"}
-                    </div>
+              );
+            })
 
-                    <div className="text-slate-500 truncate mt-1">
-                      {chat.message}
-                    </div>
+          )}
 
-                    <div className="text-xs text-slate-400 mt-1">
-                      {chat.createdAt
-                        ? new Date(
-                            chat.createdAt
-                          ).toLocaleTimeString()
-                        : ""}
-                    </div>
-
-                  </div>
-
-                  {!chat.isRead && (
-                    <div className="w-3 h-3 bg-teal-600 rounded-full">
-                    </div>
-                  )}
-
-                </div>
-
-              </div>
-            );
-
-          })
-
-        )}
+        </div>
 
       </div>
 
     </div>
-
-  </div>
-);
+  );
 }
 
 export default ChatList;

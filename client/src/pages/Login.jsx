@@ -69,8 +69,8 @@ window.dispatchEvent(new Event("userChanged"));
 
   return (
 
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 flex items-center justify-center px-6 py-12">
-  <div className="w-full max-w-md bg-white border border-slate-200 p-8 md:p-10 rounded-2xl shadow-2xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 flex items-center justify-center px-4 py-8">
+  <div className="w-full max-w-md bg-white border border-slate-200 p-6 sm:p-8 rounded-2xl shadow-xl">
 
       <div className="text-center mb-8">
 
@@ -78,9 +78,9 @@ window.dispatchEvent(new Event("userChanged"));
     Student GigSphere
   </p>
 
-  <h1 className="text-3xl font-bold text-slate-800 mt-2">
-    Welcome Back
-  </h1>
+  <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 mt-2">
+  Welcome Back
+</h1>
 
   <p className="text-slate-500 mt-2">
     Login to continue to your account
@@ -91,7 +91,7 @@ window.dispatchEvent(new Event("userChanged"));
       <form onSubmit={handleSubmit}>
 
         <input
-          className="border border-slate-300 w-full p-3 mb-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+          className="border border-slate-300 w-full p-3.5 mb-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
           type="email"
           placeholder="Enter Email"
           value={email}
@@ -101,8 +101,7 @@ window.dispatchEvent(new Event("userChanged"));
         />
 
         <input
-          className="border border-slate-300 w-full p-3 mb-5 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
-          type="password"
+          className="border border-slate-300 w-full p-3.5 mb-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
           placeholder="Enter Password"
           value={password}
           onChange={(e) =>
