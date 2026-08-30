@@ -1,3 +1,4 @@
+
 import Sidebar from "../../components/Sidebar";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -10,271 +11,429 @@ function Reports() {
   const [users, setUsers] = useState([]);
   const [services, setServices] = useState([]);
   const [bookings, setBookings] = useState([]);
+
   useEffect(() => {
-  fetchUsers();
-   fetchServices();
-   fetchBookings();
-}, []);
+    fetchUsers();
+    fetchServices();
+    fetchBookings();
+  }, []);
 
-const fetchUsers = async () => {
-  try {
-    const response = await api.get("/admin/users");
-    setUsers(response.data);
-  } catch (error) {
-    console.log(error);
-  }
-};
-const fetchServices = async () => {
-  try {
-    const response = await api.get("/services");
+  const fetchUsers = async () => {
+    try {
+      const response = await api.get("/admin/users");
+      setUsers(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    setServices(response.data);
+  const fetchServices = async () => {
+    try {
+      const response = await api.get("/services");
+      setServices(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  } catch (error) {
+  const fetchBookings = async () => {
+    try {
+      const response = await api.get("/admin/bookings");
+      setBookings(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    console.log(error);
+  // =========================
+  // USERS PDF
+  // =========================
 
-  }
-};
-const fetchBookings = async () => {
-  try {
+  const downloadUsersPDF = () => {
+    const doc = new jsPDF();
 
-    const response = await api.get("/admin/bookings");
+    doc.setFontSize(18);
+    doc.text("GigSphere Users Report", 14, 20);
 
-    setBookings(response.data);
+    autoTable(doc, {
+      startY: 30,
+      head: [["Name", "Email", "Role"]],
+      body: users.map((user) => [
+        user.name,
+        user.email,
+        user.role,
+      ]),
+    });
 
-  } catch (error) {
+    doc.save("Users_Report.pdf");
+  };
 
-    console.log(error);
+  // =========================
+  // USERS EXCEL
+  // =========================
 
-  }
-};
-const downloadUsersPDF = () => {
+  const downloadUsersExcel = () => {
+    const excelData = users.map((user) => ({
+      Name: user.name,
+      Email: user.email,
+      Role: user.role,
+    }));
 
-  const doc = new jsPDF();
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
 
-  doc.setFontSize(18);
-  doc.text("GigSphere Users Report", 14, 20);
+    const workbook = XLSX.utils.book_new();
 
-  autoTable(doc, {
-    startY: 30,
-    head: [["Name", "Email", "Role"]],
-    body: users.map((user) => [
-      user.name,
-      user.email,
-      user.role,
-    ]),
-  });
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Users"
+    );
 
-  doc.save("Users_Report.pdf");
-};
-const downloadUsersExcel = () => {
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
 
-  const excelData = users.map((user) => ({
-    Name: user.name,
-    Email: user.email,
-    Role: user.role,
-  }));
-
-  const worksheet = XLSX.utils.json_to_sheet(excelData);
-
-  const workbook = XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    "Users"
-  );
-
-  const excelBuffer = XLSX.write(workbook, {
-    bookType: "xlsx",
-    type: "array",
-  });
-
-  const file = new Blob(
-    [excelBuffer],
-    {
+    const file = new Blob([excelBuffer], {
       type:
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    }
-  );
+    });
 
-  saveAs(file, "Users_Report.xlsx");
+    saveAs(file, "Users_Report.xlsx");
+  };
 
-};
-const downloadServicesPDF = () => {
+  // =========================
+  // SERVICES PDF
+  // =========================
 
-  const doc = new jsPDF();
+  const downloadServicesPDF = () => {
+    const doc = new jsPDF();
 
-  doc.setFontSize(18);
-  doc.text("GigSphere Services Report", 14, 20);
+    doc.setFontSize(18);
+    doc.text("GigSphere Services Report", 14, 20);
 
-  autoTable(doc, {
-    startY: 30,
+    autoTable(doc, {
+      startY: 30,
+      head: [["Title", "Category", "Price", "Provider"]],
+      body: services.map((service) => [
+        service.title,
+        service.category,
+        `Rs.${service.price}`,
+        service.user?.name || "N/A",
+      ]),
+    });
 
-    head: [["Title", "Category", "Price"]],
+    doc.save("Services_Report.pdf");
+  };
 
-    body: services.map((service) => [
-      service.title,
-      service.category,
-      `₹${service.price}`,
-    ]),
-  });
+  // =========================
+  // SERVICES EXCEL
+  // =========================
 
-  doc.save("Services_Report.pdf");
+  const downloadServicesExcel = () => {
+    const excelData = services.map((service) => ({
+      Title: service.title,
+      Category: service.category,
+      Price: service.price,
+      Provider: service.user?.name || "N/A",
+    }));
 
-};
-const downloadServicesExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
 
-  const excelData = services.map((service) => ({
-    Title: service.title,
-    Category: service.category,
-    Price: service.price,
-    Provider: service.user?.name || "N/A",
-  }));
+    const workbook = XLSX.utils.book_new();
 
-  const worksheet = XLSX.utils.json_to_sheet(excelData);
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Services"
+    );
 
-  const workbook = XLSX.utils.book_new();
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
 
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    "Services"
-  );
-
-  const excelBuffer = XLSX.write(workbook, {
-    bookType: "xlsx",
-    type: "array",
-  });
-
-  const file = new Blob(
-    [excelBuffer],
-    {
+    const file = new Blob([excelBuffer], {
       type:
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    }
-  );
+    });
 
-  saveAs(file, "Services_Report.xlsx");
+    saveAs(file, "Services_Report.xlsx");
+  };
 
-};
-const downloadBookingsPDF = () => {
+  // =========================
+  // BOOKINGS PDF
+  // =========================
 
-  const doc = new jsPDF();
+  const downloadBookingsPDF = () => {
+    const doc = new jsPDF();
 
-  doc.setFontSize(18);
-  doc.text("GigSphere Bookings Report", 14, 20);
+    doc.setFontSize(18);
+    doc.text("GigSphere Bookings Report", 14, 20);
 
-  autoTable(doc, {
-    startY: 30,
+    autoTable(doc, {
+      startY: 30,
 
-    head: [["Customer", "Provider", "Service", "Status"]],
+      head: [
+        ["Customer", "Provider", "Service", "Status"],
+      ],
 
-    body: bookings.map((booking) => [
+      body: bookings.map((booking) => [
+        booking.customer?.name || "N/A",
+        booking.provider?.name || "N/A",
+        booking.service?.title || "Deleted",
+        booking.status,
+      ]),
+    });
 
-      booking.customer?.name || "N/A",
+    doc.save("Bookings_Report.pdf");
+  };
 
-      booking.provider?.name || "N/A",
+  // =========================
+  // BOOKINGS EXCEL
+  // =========================
 
-      booking.service?.title || "Deleted",
+  const downloadBookingsExcel = () => {
+    const excelData = bookings.map((booking) => ({
+      Customer: booking.customer?.name || "N/A",
+      Provider: booking.provider?.name || "N/A",
+      Service: booking.service?.title || "Deleted",
+      Status: booking.status,
+    }));
 
-      booking.status,
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
 
-    ]),
-  });
+    const workbook = XLSX.utils.book_new();
 
-  doc.save("Bookings_Report.pdf");
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Bookings"
+    );
 
-};
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], {
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(file, "Bookings_Report.xlsx");
+  };
+
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="flex min-h-screen bg-slate-50">
+
+      {/* SIDEBAR */}
 
       <Sidebar />
 
-      <div className="ml-0 md:ml-64 flex-1 p-4 sm:p-6 lg:p-8">
+      {/* MAIN CONTENT */}
 
-        <h1 className="text-3xl font-bold">
-          Reports
-        </h1>
+      <main className="flex-1 min-w-0 ml-0 md:ml-64">
 
-        <p className="text-gray-500 mt-2">
-          Download Platform Reports
-        </p>
+        {/* HEADER */}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-teal-900 text-white">
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
 
-            <h2 className="text-xl font-semibold">
-              Users Report
-            </h2>
+            <div className="max-w-7xl mx-auto">
 
-            <p className="text-gray-500 mt-2">
-              Download all registered users.
-            </p>
+              <p className="text-teal-300 font-semibold text-sm uppercase tracking-wider">
+                Admin Panel
+              </p>
 
-            <button
-onClick={downloadUsersPDF}
-className="mt-5 bg-green-600 text-white px-5 py-2 rounded-lg"
->
-  Download PDF
-</button>
-<button
-  onClick={downloadServicesPDF}
-  className="mt-3 bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700"
->
-  Download Excel
-</button>
+              <h1 className="text-3xl sm:text-4xl font-bold mt-2">
+                Reports
+              </h1>
 
-          </div>
+              <p className="text-slate-300 mt-2 text-sm sm:text-base">
+                Download and manage GigSphere platform reports.
+              </p>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
+            </div>
 
-            <h2 className="text-xl font-semibold">
-              Services Report
-            </h2>
-
-            <p className="text-gray-500 mt-2">
-              Download all services.
-            </p>
-
-            <button
-  onClick={downloadUsersPDF}
-  className="mt-5 bg-blue-600 text-white px-5 py-2 rounded-lg"
->
-  Download PDF
-</button>
-<button
-  onClick={downloadUsersExcel}
-  className="mt-3 bg-green-600 text-white px-5 py-2 rounded-lg"
->
-  Download Excel
-</button>
-
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6">
-
-            <h2 className="text-xl font-semibold">
-              Bookings Report
-            </h2>
-
-            <p className="text-gray-500 mt-2">
-              Download all bookings.
-            </p>
-
-            <button
-  onClick={downloadBookingsPDF}
-  className="mt-5 bg-purple-600 text-white px-5 py-2 rounded-lg"
->
-  Download PDF
-</button>
           </div>
 
         </div>
 
-      </div>
+
+        {/* CONTENT */}
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+
+          {/* SUMMARY */}
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+
+              <p className="text-slate-500 text-sm">
+                Total Users
+              </p>
+
+              <h2 className="text-3xl font-bold text-slate-900 mt-1">
+                {users.length}
+              </h2>
+
+            </div>
+
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+
+              <p className="text-slate-500 text-sm">
+                Total Services
+              </p>
+
+              <h2 className="text-3xl font-bold text-teal-600 mt-1">
+                {services.length}
+              </h2>
+
+            </div>
+
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+
+              <p className="text-slate-500 text-sm">
+                Total Bookings
+              </p>
+
+              <h2 className="text-3xl font-bold text-slate-900 mt-1">
+                {bookings.length}
+              </h2>
+
+            </div>
+
+          </div>
+
+
+          {/* REPORT CARDS */}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
+
+
+            {/* USERS */}
+
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition p-5 sm:p-6">
+
+              <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center text-2xl mb-4">
+                👥
+              </div>
+
+              <h2 className="text-xl font-bold text-slate-900">
+                Users Report
+              </h2>
+
+              <p className="text-slate-500 mt-2 text-sm leading-relaxed">
+                Download details of all registered users,
+                including their roles and email addresses.
+              </p>
+
+              <div className="flex flex-col gap-3 mt-6">
+
+                <button
+                  onClick={downloadUsersPDF}
+                  className="w-full bg-slate-900 text-white py-3 px-4 rounded-xl font-semibold hover:bg-slate-800 active:scale-[0.98] transition"
+                >
+                  📄 Download PDF
+                </button>
+
+                <button
+                  onClick={downloadUsersExcel}
+                  className="w-full bg-teal-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-teal-700 active:scale-[0.98] transition"
+                >
+                  📊 Download Excel
+                </button>
+
+              </div>
+
+            </div>
+
+
+            {/* SERVICES */}
+
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition p-5 sm:p-6">
+
+              <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center text-2xl mb-4">
+                🛠️
+              </div>
+
+              <h2 className="text-xl font-bold text-slate-900">
+                Services Report
+              </h2>
+
+              <p className="text-slate-500 mt-2 text-sm leading-relaxed">
+                Download details of services available on
+                the GigSphere platform.
+              </p>
+
+              <div className="flex flex-col gap-3 mt-6">
+
+                <button
+                  onClick={downloadServicesPDF}
+                  className="w-full bg-slate-900 text-white py-3 px-4 rounded-xl font-semibold hover:bg-slate-800 active:scale-[0.98] transition"
+                >
+                  📄 Download PDF
+                </button>
+
+                <button
+                  onClick={downloadServicesExcel}
+                  className="w-full bg-teal-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-teal-700 active:scale-[0.98] transition"
+                >
+                  📊 Download Excel
+                </button>
+
+              </div>
+
+            </div>
+
+
+            {/* BOOKINGS */}
+
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition p-5 sm:p-6">
+
+              <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center text-2xl mb-4">
+                📋
+              </div>
+
+              <h2 className="text-xl font-bold text-slate-900">
+                Bookings Report
+              </h2>
+
+              <p className="text-slate-500 mt-2 text-sm leading-relaxed">
+                Download booking information including
+                customers, providers, services and status.
+              </p>
+
+              <div className="flex flex-col gap-3 mt-6">
+
+                <button
+                  onClick={downloadBookingsPDF}
+                  className="w-full bg-slate-900 text-white py-3 px-4 rounded-xl font-semibold hover:bg-slate-800 active:scale-[0.98] transition"
+                >
+                  📄 Download PDF
+                </button>
+
+                <button
+                  onClick={downloadBookingsExcel}
+                  className="w-full bg-teal-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-teal-700 active:scale-[0.98] transition"
+                >
+                  📊 Download Excel
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
 
     </div>
   );

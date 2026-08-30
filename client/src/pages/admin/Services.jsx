@@ -13,118 +13,478 @@ function Services() {
   const fetchServices = async () => {
     try {
       const response = await api.get("/services");
-
-      console.log(response.data);
-
       setServices(response.data);
     } catch (error) {
       console.log(error);
     }
   };
+
   const deleteService = async (id) => {
-  try {
-    await api.delete(`/admin/services/${id}`);
+    try {
+      await api.delete(`/admin/services/${id}`);
 
-    alert("Service Deleted Successfully");
+      alert("Service Deleted Successfully");
+      fetchServices();
+    } catch (error) {
+      console.log(error);
+      alert("Unable to delete service");
+    }
+  };
 
-    fetchServices();
-  } catch (error) {
-    console.log(error);
+  const updateStatus = async (id, status) => {
+    try {
+      await api.put(`/admin/services/${id}`, {
+        status,
+      });
 
-    alert("Unable to delete service");
-  }
-};
-const updateStatus = async (id, status) => {
-  try {
+      alert("Status Updated Successfully");
+      fetchServices();
+    } catch (error) {
+      console.log(error);
+      alert("Unable to update status");
+    }
+  };
 
-    await api.put(`/admin/services/${id}`, {
-      status,
-    });
-
-    alert("Status Updated Successfully");
-
-    fetchServices();
-
-  } catch (error) {
-
-    console.log(error);
-
-    alert("Unable to update status");
-
-  }
-};
+  const filteredServices = services.filter((service) =>
+    service.title?.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="min-h-screen bg-slate-50">
+
+      {/* SIDEBAR */}
       <Sidebar />
 
-      <div className="ml-64 flex-1 p-8">
-        <h1 className="text-3xl font-bold mb-6">
-          Manage Services
-        </h1>
-        <input
-  type="text"
-  placeholder="Search Service..."
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-  className="w-full border p-3 rounded-lg mb-6"
-/>
+      {/* MAIN CONTENT
+          ml-64 on desktop
+          ml-0 on mobile
+      */}
+      <main className="ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8">
 
-        <table className="w-full bg-white rounded-lg shadow">
-          <thead>
-            <tr className="border-b">
-              <th className="p-3 text-left">Title</th>
-              <th className="p-3 text-left">Category</th>
-              <th className="p-3 text-left">Price</th>
-              <th className="p-3 text-left">Status</th>
-              <th className="p-3 text-left">Action</th>
-              
-            </tr>
-          </thead>
+        {/* HEADER */}
+        <div className="mb-6">
 
-          <tbody>
-            {services
-  .filter((service) =>
-    service.title.toLowerCase().includes(search.toLowerCase())
-  )
-  .map((service) => (
-              <tr key={service._id} className="border-b">
-                <td className="p-3">{service.title}</td>
-                <td className="p-3">{service.category}</td>
-                <td className="p-3">₹{service.price}</td>
-                <td className="p-3">{service.status}</td>
-                <td className="p-3">
-  <div className="flex gap-2">
+          <p className="text-sm font-semibold uppercase tracking-wider text-teal-600">
+            Admin Panel
+          </p>
 
-  <button
-    onClick={() => updateStatus(service._id, "Approved")}
-    className="bg-green-600 text-white px-3 py-2 rounded"
-  >
-    Approve
-  </button>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
+            Manage Services
+          </h1>
 
-  <button
-    onClick={() => updateStatus(service._id, "Rejected")}
-    className="bg-yellow-500 text-white px-3 py-2 rounded"
-  >
-    Reject
-  </button>
+          <p className="text-slate-500 mt-1 text-sm sm:text-base">
+            Review, approve, reject and remove student services.
+          </p>
 
-  <button
-    onClick={() => deleteService(service._id)}
-    className="bg-red-600 text-white px-3 py-2 rounded"
-  >
-    Delete
-  </button>
+        </div>
 
-</div>
+        {/* SEARCH */}
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 mb-6">
 
-</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Search Services
+          </label>
+
+          <input
+            type="text"
+            placeholder="Search by service title..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="
+              w-full
+              border border-slate-300
+              rounded-xl
+              px-4 py-3
+              text-sm sm:text-base
+              outline-none
+              focus:ring-2
+              focus:ring-teal-500
+              focus:border-teal-500
+              transition
+            "
+          />
+
+        </div>
+
+        {/* SERVICE COUNT */}
+        <div className="mb-4 text-sm text-slate-500">
+          Showing{" "}
+          <span className="font-semibold text-slate-800">
+            {filteredServices.length}
+          </span>{" "}
+          service{filteredServices.length !== 1 ? "s" : ""}
+        </div>
+
+        {/* ================= MOBILE CARDS ================= */}
+        <div className="space-y-4 lg:hidden">
+
+          {filteredServices.length === 0 ? (
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center">
+
+              <div className="text-4xl mb-3">
+                🛠️
+              </div>
+
+              <h3 className="font-semibold text-slate-800">
+                No services found
+              </h3>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Try a different search.
+              </p>
+
+            </div>
+
+          ) : (
+
+            filteredServices.map((service) => (
+
+              <div
+                key={service._id}
+                className="
+                  bg-white
+                  border border-slate-200
+                  rounded-2xl
+                  shadow-sm
+                  p-5
+                "
+              >
+
+                {/* TITLE */}
+                <div className="flex justify-between gap-3">
+
+                  <div className="min-w-0">
+
+                    <h2 className="text-lg font-bold text-slate-900 break-words">
+                      {service.title}
+                    </h2>
+
+                    <span className="
+                      inline-block
+                      mt-2
+                      bg-teal-50
+                      text-teal-700
+                      px-3 py-1
+                      rounded-full
+                      text-xs
+                      font-semibold
+                    ">
+                      {service.category || "Service"}
+                    </span>
+
+                  </div>
+
+                  {/* STATUS */}
+                  <span
+                    className={`
+                      h-fit
+                      shrink-0
+                      px-3 py-1
+                      rounded-full
+                      text-xs
+                      font-semibold
+                      ${
+                        service.status === "Approved"
+                          ? "bg-green-50 text-green-700"
+                          : service.status === "Rejected"
+                          ? "bg-red-50 text-red-700"
+                          : "bg-yellow-50 text-yellow-700"
+                      }
+                    `}
+                  >
+                    {service.status || "Pending"}
+                  </span>
+
+                </div>
+
+                {/* PRICE */}
+                <div className="mt-4">
+
+                  <p className="text-xs text-slate-500">
+                    Price
+                  </p>
+
+                  <p className="text-2xl font-bold text-teal-600">
+                    ₹{service.price}
+                  </p>
+
+                </div>
+
+                {/* ACTIONS */}
+                <div className="grid grid-cols-3 gap-2 mt-5">
+
+                  <button
+                    onClick={() =>
+                      updateStatus(service._id, "Approved")
+                    }
+                    className="
+                      bg-teal-600
+                      text-white
+                      py-2.5
+                      rounded-xl
+                      text-xs sm:text-sm
+                      font-semibold
+                      hover:bg-teal-700
+                      active:scale-95
+                      transition
+                    "
+                  >
+                    Approve
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      updateStatus(service._id, "Rejected")
+                    }
+                    className="
+                      bg-slate-700
+                      text-white
+                      py-2.5
+                      rounded-xl
+                      text-xs sm:text-sm
+                      font-semibold
+                      hover:bg-slate-800
+                      active:scale-95
+                      transition
+                    "
+                  >
+                    Reject
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      deleteService(service._id)
+                    }
+                    className="
+                      bg-red-600
+                      text-white
+                      py-2.5
+                      rounded-xl
+                      text-xs sm:text-sm
+                      font-semibold
+                      hover:bg-red-700
+                      active:scale-95
+                      transition
+                    "
+                  >
+                    Delete
+                  </button>
+
+                </div>
+
+              </div>
+
+            ))
+
+          )}
+
+        </div>
+
+
+        {/* ================= DESKTOP TABLE ================= */}
+        <div className="hidden lg:block">
+
+          <div className="
+            bg-white
+            border border-slate-200
+            rounded-2xl
+            shadow-sm
+            overflow-hidden
+          ">
+
+            <div className="overflow-x-auto">
+
+              <table className="w-full">
+
+                <thead className="bg-slate-900 text-white">
+
+                  <tr>
+
+                    <th className="px-5 py-4 text-left text-sm font-semibold">
+                      Title
+                    </th>
+
+                    <th className="px-5 py-4 text-left text-sm font-semibold">
+                      Category
+                    </th>
+
+                    <th className="px-5 py-4 text-left text-sm font-semibold">
+                      Price
+                    </th>
+
+                    <th className="px-5 py-4 text-left text-sm font-semibold">
+                      Status
+                    </th>
+
+                    <th className="px-5 py-4 text-left text-sm font-semibold">
+                      Actions
+                    </th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  {filteredServices.length === 0 ? (
+
+                    <tr>
+
+                      <td
+                        colSpan="5"
+                        className="text-center py-12 text-slate-500"
+                      >
+                        No services found.
+                      </td>
+
+                    </tr>
+
+                  ) : (
+
+                    filteredServices.map((service) => (
+
+                      <tr
+                        key={service._id}
+                        className="
+                          border-b
+                          border-slate-100
+                          hover:bg-slate-50
+                          transition
+                        "
+                      >
+
+                        <td className="px-5 py-4 font-semibold text-slate-800">
+                          {service.title}
+                        </td>
+
+                        <td className="px-5 py-4">
+
+                          <span className="
+                            bg-teal-50
+                            text-teal-700
+                            px-3 py-1
+                            rounded-full
+                            text-xs
+                            font-semibold
+                          ">
+                            {service.category || "Service"}
+                          </span>
+
+                        </td>
+
+                        <td className="px-5 py-4 font-bold text-teal-600">
+                          ₹{service.price}
+                        </td>
+
+                        <td className="px-5 py-4">
+
+                          <span
+                            className={`
+                              px-3 py-1
+                              rounded-full
+                              text-xs
+                              font-semibold
+                              ${
+                                service.status === "Approved"
+                                  ? "bg-green-50 text-green-700"
+                                  : service.status === "Rejected"
+                                  ? "bg-red-50 text-red-700"
+                                  : "bg-yellow-50 text-yellow-700"
+                              }
+                            `}
+                          >
+                            {service.status || "Pending"}
+                          </span>
+
+                        </td>
+
+                        <td className="px-5 py-4">
+
+                          <div className="flex gap-2">
+
+                            <button
+                              onClick={() =>
+                                updateStatus(
+                                  service._id,
+                                  "Approved"
+                                )
+                              }
+                              className="
+                                bg-teal-600
+                                text-white
+                                px-4 py-2
+                                rounded-lg
+                                text-sm
+                                font-semibold
+                                hover:bg-teal-700
+                                transition
+                              "
+                            >
+                              Approve
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                updateStatus(
+                                  service._id,
+                                  "Rejected"
+                                )
+                              }
+                              className="
+                                bg-slate-700
+                                text-white
+                                px-4 py-2
+                                rounded-lg
+                                text-sm
+                                font-semibold
+                                hover:bg-slate-800
+                                transition
+                              "
+                            >
+                              Reject
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                deleteService(service._id)
+                              }
+                              className="
+                                bg-red-600
+                                text-white
+                                px-4 py-2
+                                rounded-lg
+                                text-sm
+                                font-semibold
+                                hover:bg-red-700
+                                transition
+                              "
+                            >
+                              Delete
+                            </button>
+
+                          </div>
+
+                        </td>
+
+                      </tr>
+
+                    ))
+
+                  )}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+
     </div>
   );
 }
