@@ -25,12 +25,11 @@ function Users() {
       <Sidebar />
 
       {/* MAIN CONTENT */}
-      <div className="md:ml-64 px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
-
+<div className="lg:ml-64 px-4 sm:px-6 lg:px-8 pt-20 lg:pt-8 pb-8">
         <AdminHeader />
 
         {/* PAGE HEADER */}
-        <div className="mt-6 mb-6">
+        <div className="mt-6 lg:mt-2 mb-6">
 
           <p className="text-teal-600 font-semibold text-sm uppercase tracking-wide">
             Administration

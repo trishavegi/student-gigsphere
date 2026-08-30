@@ -20,19 +20,18 @@ function Sidebar() {
   return (
     <>
       {/* MOBILE TOP BAR */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-slate-950 text-white h-16 flex items-center justify-between px-4 shadow-lg">
-
+<div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-slate-950 text-white h-16 flex items-center justify-between px-4 border-b border-slate-800 shadow-lg">
         <h1 className="text-xl font-bold">
           Gig<span className="text-teal-400">Sphere</span>
         </h1>
 
-        <button
-          onClick={() => setIsOpen(true)}
-          className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition"
-          aria-label="Open menu"
-        >
-          ☰
-        </button>
+       <button
+  onClick={() => setIsOpen(true)}
+  className="p-2.5 rounded-xl bg-slate-800 hover:bg-teal-600 active:scale-95 transition-all"
+  aria-label="Open menu"
+>
+  ☰
+</button>
 
       </div>
 
