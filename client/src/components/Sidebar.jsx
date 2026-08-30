@@ -1,8 +1,9 @@
-import { NavLink } from "react-router-dom";
+
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 
 function Sidebar() {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
     { to: "/admin", icon: "📊", label: "Dashboard" },
@@ -19,64 +20,78 @@ function Sidebar() {
   return (
     <>
       {/* MOBILE TOP BAR */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-slate-950 text-white h-16 flex items-center justify-between px-4 shadow-lg">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-slate-950 text-white h-16 flex items-center justify-between px-4 shadow-lg">
 
         <h1 className="text-xl font-bold">
           Gig<span className="text-teal-400">Sphere</span>
         </h1>
 
         <button
-          onClick={() => setOpen(!open)}
-          className="w-10 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-xl"
+          onClick={() => setIsOpen(true)}
+          className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition"
+          aria-label="Open menu"
         >
-          {open ? "✕" : "☰"}
+          ☰
         </button>
 
       </div>
 
 
       {/* MOBILE OVERLAY */}
-      {open && (
+
+      {isOpen && (
         <div
-          onClick={() => setOpen(false)}
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsOpen(false)}
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
         />
       )}
 
 
       {/* SIDEBAR */}
+
       <aside
         className={`
           fixed top-0 left-0 z-50
-          h-screen w-64
+          w-64 h-screen
           bg-slate-950 text-white
           shadow-2xl
           transform transition-transform duration-300
-          md:translate-x-0
-          ${open ? "translate-x-0" : "-translate-x-full"}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0
         `}
       >
 
         {/* LOGO */}
-        <div className="h-20 flex items-center px-6 border-b border-slate-800">
+
+        <div className="h-20 flex items-center justify-between px-6 border-b border-slate-800">
 
           <h1 className="text-2xl font-bold">
             Gig<span className="text-teal-400">Sphere</span>
           </h1>
 
+          {/* CLOSE BUTTON - MOBILE */}
+
+          <button
+            onClick={() => setIsOpen(false)}
+            className="lg:hidden text-slate-400 hover:text-white text-2xl"
+          >
+            ✕
+          </button>
+
         </div>
 
 
         {/* MENU */}
-        <nav className="p-4 space-y-2">
+
+        <nav className="p-4 space-y-2 overflow-y-auto h-[calc(100vh-80px)]">
 
           {menuItems.map((item) => (
 
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={() => setIsOpen(false)}
               end={item.to === "/admin"}
-              onClick={() => setOpen(false)}
               className={({ isActive }) =>
                 `
                 flex items-center gap-3
@@ -86,7 +101,7 @@ function Sidebar() {
                 transition-all duration-200
                 ${
                   isActive
-                    ? "bg-teal-600 text-white shadow-md shadow-teal-900/30"
+                    ? "bg-teal-600 text-white shadow-md"
                     : "text-slate-300 hover:bg-slate-800 hover:text-white"
                 }
                 `
@@ -113,3 +128,4 @@ function Sidebar() {
 }
 
 export default Sidebar;
+
