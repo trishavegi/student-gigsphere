@@ -55,31 +55,50 @@ function Services() {
       {/* SIDEBAR */}
       <Sidebar />
 
-      {/* MAIN CONTENT
-          ml-64 on desktop
-          ml-0 on mobile
-      */}
-      <main className="ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8">
+      {/* MAIN CONTENT */}
+      <main
+        className="
+          ml-0
+          lg:ml-64
+          px-4
+          sm:px-6
+          lg:px-8
+          pt-24
+          lg:pt-8
+          pb-8
+        "
+      >
 
-        {/* HEADER */}
-        <div className="mb-6">
+        {/* ================= HEADER ================= */}
+        <div className="mb-7">
 
           <p className="text-sm font-semibold uppercase tracking-wider text-teal-600">
             Admin Panel
           </p>
 
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
+          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mt-1">
             Manage Services
           </h1>
 
-          <p className="text-slate-500 mt-1 text-sm sm:text-base">
+          <p className="text-slate-500 mt-2 text-sm sm:text-base">
             Review, approve, reject and remove student services.
           </p>
 
         </div>
 
-        {/* SEARCH */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 mb-6">
+
+        {/* ================= SEARCH ================= */}
+        <div
+          className="
+            bg-white
+            border border-slate-200
+            rounded-2xl
+            shadow-sm
+            p-4
+            sm:p-5
+            mb-6
+          "
+        >
 
           <label className="block text-sm font-semibold text-slate-700 mb-2">
             Search Services
@@ -94,8 +113,12 @@ function Services() {
               w-full
               border border-slate-300
               rounded-xl
-              px-4 py-3
-              text-sm sm:text-base
+              px-4
+              py-3
+              text-sm
+              sm:text-base
+              text-slate-800
+              placeholder:text-slate-400
               outline-none
               focus:ring-2
               focus:ring-teal-500
@@ -106,21 +129,39 @@ function Services() {
 
         </div>
 
-        {/* SERVICE COUNT */}
-        <div className="mb-4 text-sm text-slate-500">
+
+        {/* ================= COUNT ================= */}
+        <div className="mb-5 text-sm text-slate-500">
+
           Showing{" "}
-          <span className="font-semibold text-slate-800">
+
+          <span className="font-bold text-slate-800">
             {filteredServices.length}
           </span>{" "}
+
           service{filteredServices.length !== 1 ? "s" : ""}
+
         </div>
 
-        {/* ================= MOBILE CARDS ================= */}
+
+        {/* ================================================= */}
+        {/* MOBILE CARDS */}
+        {/* ================================================= */}
+
         <div className="space-y-4 lg:hidden">
 
           {filteredServices.length === 0 ? (
 
-            <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center">
+            <div
+              className="
+                bg-white
+                border border-slate-200
+                rounded-2xl
+                p-8
+                text-center
+                shadow-sm
+              "
+            >
 
               <div className="text-4xl mb-3">
                 🛠️
@@ -151,36 +192,52 @@ function Services() {
                 "
               >
 
-                {/* TITLE */}
-                <div className="flex justify-between gap-3">
+                {/* TITLE + STATUS */}
+                <div className="flex items-start justify-between gap-4">
 
+                  {/* TITLE */}
                   <div className="min-w-0">
 
-                    <h2 className="text-lg font-bold text-slate-900 break-words">
+                    <h2
+                      className="
+                        text-lg
+                        sm:text-xl
+                        font-bold
+                        text-slate-900
+                        break-words
+                        leading-snug
+                      "
+                    >
                       {service.title}
                     </h2>
 
-                    <span className="
-                      inline-block
-                      mt-2
-                      bg-teal-50
-                      text-teal-700
-                      px-3 py-1
-                      rounded-full
-                      text-xs
-                      font-semibold
-                    ">
+                    {/* CATEGORY */}
+                    <span
+                      className="
+                        inline-block
+                        mt-2
+                        bg-teal-50
+                        text-teal-700
+                        px-3
+                        py-1
+                        rounded-full
+                        text-xs
+                        font-semibold
+                      "
+                    >
                       {service.category || "Service"}
                     </span>
 
                   </div>
 
+
                   {/* STATUS */}
                   <span
                     className={`
-                      h-fit
                       shrink-0
-                      px-3 py-1
+                      whitespace-nowrap
+                      px-3
+                      py-1.5
                       rounded-full
                       text-xs
                       font-semibold
@@ -198,73 +255,94 @@ function Services() {
 
                 </div>
 
+
                 {/* PRICE */}
-                <div className="mt-4">
+                <div className="mt-5">
 
                   <p className="text-xs text-slate-500">
                     Price
                   </p>
 
-                  <p className="text-2xl font-bold text-teal-600">
+                  <p className="text-2xl font-bold text-teal-600 mt-0.5">
                     ₹{service.price}
                   </p>
 
                 </div>
 
-                {/* ACTIONS */}
-                <div className="grid grid-cols-3 gap-2 mt-5">
 
+                {/* ACTION BUTTONS */}
+                <div
+                  className="
+                    grid
+                    grid-cols-3
+                    gap-2
+                    sm:gap-3
+                    mt-5
+                  "
+                >
+
+                  {/* APPROVE */}
                   <button
                     onClick={() =>
                       updateStatus(service._id, "Approved")
                     }
                     className="
+                      w-full
                       bg-teal-600
+                      hover:bg-teal-700
+                      active:scale-95
                       text-white
                       py-2.5
                       rounded-xl
-                      text-xs sm:text-sm
+                      text-xs
+                      sm:text-sm
                       font-semibold
-                      hover:bg-teal-700
-                      active:scale-95
                       transition
                     "
                   >
                     Approve
                   </button>
 
+
+                  {/* REJECT */}
                   <button
                     onClick={() =>
                       updateStatus(service._id, "Rejected")
                     }
                     className="
+                      w-full
                       bg-slate-700
+                      hover:bg-slate-800
+                      active:scale-95
                       text-white
                       py-2.5
                       rounded-xl
-                      text-xs sm:text-sm
+                      text-xs
+                      sm:text-sm
                       font-semibold
-                      hover:bg-slate-800
-                      active:scale-95
                       transition
                     "
                   >
                     Reject
                   </button>
 
+
+                  {/* DELETE */}
                   <button
                     onClick={() =>
                       deleteService(service._id)
                     }
                     className="
+                      w-full
                       bg-red-600
+                      hover:bg-red-700
+                      active:scale-95
                       text-white
                       py-2.5
                       rounded-xl
-                      text-xs sm:text-sm
+                      text-xs
+                      sm:text-sm
                       font-semibold
-                      hover:bg-red-700
-                      active:scale-95
                       transition
                     "
                   >
@@ -282,16 +360,21 @@ function Services() {
         </div>
 
 
-        {/* ================= DESKTOP TABLE ================= */}
+        {/* ================================================= */}
+        {/* DESKTOP TABLE */}
+        {/* ================================================= */}
+
         <div className="hidden lg:block">
 
-          <div className="
-            bg-white
-            border border-slate-200
-            rounded-2xl
-            shadow-sm
-            overflow-hidden
-          ">
+          <div
+            className="
+              bg-white
+              border border-slate-200
+              rounded-2xl
+              shadow-sm
+              overflow-hidden
+            "
+          >
 
             <div className="overflow-x-auto">
 
@@ -325,6 +408,7 @@ function Services() {
 
                 </thead>
 
+
                 <tbody>
 
                   {filteredServices.length === 0 ? (
@@ -354,34 +438,45 @@ function Services() {
                         "
                       >
 
+                        {/* TITLE */}
                         <td className="px-5 py-4 font-semibold text-slate-800">
                           {service.title}
                         </td>
 
+
+                        {/* CATEGORY */}
                         <td className="px-5 py-4">
 
-                          <span className="
-                            bg-teal-50
-                            text-teal-700
-                            px-3 py-1
-                            rounded-full
-                            text-xs
-                            font-semibold
-                          ">
+                          <span
+                            className="
+                              bg-teal-50
+                              text-teal-700
+                              px-3
+                              py-1
+                              rounded-full
+                              text-xs
+                              font-semibold
+                            "
+                          >
                             {service.category || "Service"}
                           </span>
 
                         </td>
 
+
+                        {/* PRICE */}
                         <td className="px-5 py-4 font-bold text-teal-600">
                           ₹{service.price}
                         </td>
 
+
+                        {/* STATUS */}
                         <td className="px-5 py-4">
 
                           <span
                             className={`
-                              px-3 py-1
+                              px-3
+                              py-1
                               rounded-full
                               text-xs
                               font-semibold
@@ -399,6 +494,8 @@ function Services() {
 
                         </td>
 
+
+                        {/* ACTIONS */}
                         <td className="px-5 py-4">
 
                           <div className="flex gap-2">
@@ -412,17 +509,19 @@ function Services() {
                               }
                               className="
                                 bg-teal-600
+                                hover:bg-teal-700
                                 text-white
-                                px-4 py-2
+                                px-4
+                                py-2
                                 rounded-lg
                                 text-sm
                                 font-semibold
-                                hover:bg-teal-700
                                 transition
                               "
                             >
                               Approve
                             </button>
+
 
                             <button
                               onClick={() =>
@@ -433,17 +532,19 @@ function Services() {
                               }
                               className="
                                 bg-slate-700
+                                hover:bg-slate-800
                                 text-white
-                                px-4 py-2
+                                px-4
+                                py-2
                                 rounded-lg
                                 text-sm
                                 font-semibold
-                                hover:bg-slate-800
                                 transition
                               "
                             >
                               Reject
                             </button>
+
 
                             <button
                               onClick={() =>
@@ -451,12 +552,13 @@ function Services() {
                               }
                               className="
                                 bg-red-600
+                                hover:bg-red-700
                                 text-white
-                                px-4 py-2
+                                px-4
+                                py-2
                                 rounded-lg
                                 text-sm
                                 font-semibold
-                                hover:bg-red-700
                                 transition
                               "
                             >
