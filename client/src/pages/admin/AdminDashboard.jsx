@@ -75,8 +75,7 @@ function AdminDashboard() {
           Mobile: no left margin
           Desktop: space for sidebar
       */}
-      <main className="lg:ml-64 p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
-
+<main className="lg:ml-64 pt-20 lg:pt-8 px-4 sm:px-6 lg:px-8 pb-8 space-y-6 lg:space-y-8">
         {/* HEADER */}
         <AdminHeader />
 
@@ -96,8 +95,7 @@ function AdminDashboard() {
         </div>
 
         {/* SUMMARY CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {/* USERS */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 hover:shadow-md transition">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-teal-50 flex items-center justify-center text-xl sm:text-2xl">
@@ -137,7 +135,7 @@ function AdminDashboard() {
           </div>
 
           {/* BOOKINGS */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 hover:shadow-md transition">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 hover:shadow-md transition">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-orange-50 flex items-center justify-center text-xl sm:text-2xl">
               📋
             </div>
@@ -156,7 +154,7 @@ function AdminDashboard() {
           </div>
 
           {/* REVENUE */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 hover:shadow-md transition">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 hover:shadow-md transition">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-purple-50 flex items-center justify-center text-xl sm:text-2xl">
               💰
             </div>

@@ -49,10 +49,8 @@ function Analytics() {
       <Sidebar />
 
       {/* MAIN CONTENT */}
-      <main className="ml-0 md:ml-64 min-h-screen">
-
-        <div className="px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
-
+<main className="lg:ml-64 pt-20 lg:pt-8 min-h-screen">
+<div className="px-4 sm:px-6 lg:px-8 pb-8">
           {/* HEADER */}
           <AdminHeader />
 
@@ -69,10 +67,9 @@ function Analytics() {
 
 
           {/* STATISTICS CARDS */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {/* USERS */}
-            <div className="bg-gradient-to-br from-slate-950 to-slate-800 text-white rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-lg transition">
+            <div className="bg-gradient-to-br from-slate-950 to-slate-800 text-white rounded-2xl p-4 sm:p-6 shadow-md hover:shadow-lg transition">
 
               <div className="flex items-center justify-between">
                 <h2 className="text-sm sm:text-base font-medium text-slate-300">
@@ -92,7 +89,7 @@ function Analytics() {
 
 
             {/* SERVICES */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md transition">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-md transition">
 
               <div className="flex items-center justify-between">
                 <h2 className="text-sm sm:text-base font-medium text-slate-500">
@@ -112,7 +109,7 @@ function Analytics() {
 
 
             {/* BOOKINGS */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md transition">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-md transition">
 
               <div className="flex items-center justify-between">
                 <h2 className="text-sm sm:text-base font-medium text-slate-500">
@@ -179,9 +176,9 @@ function Analytics() {
 
 
             {/* TABLE SCROLL CONTAINER */}
-            <div className="overflow-x-auto">
+           <div className="overflow-x-auto">
 
-              <table className="w-full min-w-[400px]">
+  <table className="w-full">
 
                 <thead>
 

@@ -40,10 +40,10 @@ function Providers() {
       <Sidebar />
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 min-w-0 md:ml-64">
+      <div className="flex-1 min-w-0 lg:ml-64 pt-20 lg:pt-0">
 
         {/* CONTENT WRAPPER */}
-        <div className="p-4 sm:p-6 md:p-8">
+        <div className="px-4 sm:px-6 lg:px-8 pb-8">
 
           {/* HEADER */}
           <AdminHeader />

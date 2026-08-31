@@ -233,7 +233,7 @@ function Reports() {
 
       {/* MAIN CONTENT */}
 
-      <main className="flex-1 min-w-0 ml-0 md:ml-64">
+      <main className="flex-1 min-w-0 lg:ml-64 pt-16 lg:pt-0">
 
         {/* HEADER */}
 

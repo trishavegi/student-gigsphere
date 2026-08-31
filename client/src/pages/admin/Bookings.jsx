@@ -73,8 +73,7 @@ function Bookings() {
       <Sidebar />
 
       {/* CONTENT */}
-      <main className="md:ml-64 p-4 sm:p-6 lg:p-8">
-
+<main className="lg:ml-64 pt-20 lg:pt-8 px-4 sm:px-6 lg:px-8 pb-8">
         {/* HEADER */}
         <div className="mb-6">
 
